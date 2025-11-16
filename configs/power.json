@@ -1,0 +1,18 @@
+{
+  "workout": {
+    "work_duration_seconds": 30,
+    "rest_duration_seconds": 15,
+    "total_rounds": 8
+  },
+  "pattern": {
+    "type": "pyramid",
+    "min_moves": 2,
+    "max_moves": 7,
+    "include_defensive": true
+  },
+  "generator": {
+    "use_llm": false,
+    "llm_model": "gpt-4o-mini"
+  }
+}
+

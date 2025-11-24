@@ -249,8 +249,8 @@ Note: Pause/resume functionality will be available in the future GUI version.
 
 ## Development Status
 
-V1 - CLI (MVP is out)
-V2 - GUI with animations of Scrappy Doo in fighting poses(in development...)
+- **V1** - CLI (MVP is out)
+- **V2** - GUI with animations of Scrappy Doo in fighting poses(in development...)
 
 ## License
 

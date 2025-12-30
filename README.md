@@ -429,8 +429,12 @@ All CLI flags are available in the GUI through the form interface:
 
 ## Development Status
 
-**V1** - CLI (MVP is complete)
-**V2** - GUI with animations of Scrappy Doo in fighting poses (Complete)
+**V1** 
+- CLI (MVP is complete)
+
+**V2** 
+- GUI with animations of a Doggy Boxer in fighting poses (Complete)
+
 **Future Enhancements** 
 - ability to change boxer avatar in GUI(currently fixed at boxer dog)
 - more polished sounds/cool background music scores

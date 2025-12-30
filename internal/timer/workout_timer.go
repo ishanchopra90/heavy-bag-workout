@@ -23,6 +23,8 @@ type AudioCueHandler interface {
 	PlayWorkoutStart()
 	PlayWorkoutComplete()
 	PlayComboCallout(combo models.Combo, stance models.Stance)
+	PlayRoundCallout(roundNumber int, totalRounds int)
+	Stop() // Stop/cancel all running audio commands
 }
 
 // WorkoutTimer manages the execution of a workout with work and rest periods
@@ -123,6 +125,10 @@ func (wt *WorkoutTimer) Stop() {
 	if wt.restTimer != nil {
 		wt.restTimer.Stop()
 	}
+	// Stop all running audio commands to prevent announcements from continuing
+	if wt.audioHandler != nil {
+		wt.audioHandler.Stop()
+	}
 	wt.currentRound = 0
 }
 
@@ -149,11 +155,16 @@ func (wt *WorkoutTimer) RemainingTime() time.Duration {
 
 // startWorkPeriod starts a work period for the current round
 func (wt *WorkoutTimer) startWorkPeriod() error {
+	// Check if workout is complete (all rounds done)
 	if wt.currentRound > len(wt.workout.Rounds) {
 		wt.completeWorkout()
 		return nil
 	}
-
+	// Add bounds check before array access (prevents panic when currentRound is 0 or invalid)
+	// This can happen if Stop() is called during PlayWorkoutStart() beeps
+	if wt.currentRound <= 0 || wt.currentRound > len(wt.workout.Rounds) {
+		return fmt.Errorf("invalid currentRound: %d (expected 1-%d)", wt.currentRound, len(wt.workout.Rounds))
+	}
 	round := wt.workout.Rounds[wt.currentRound-1]
 	wt.workTimer = NewWorkPeriodTimer(round.WorkDuration)
 
@@ -166,16 +177,25 @@ func (wt *WorkoutTimer) startWorkPeriod() error {
 		wt.onWorkPeriodComplete()
 	})
 
+	// Play audio announcements FIRST and wait for them to complete
+	// This ensures the timer and beeps only start after announcements finish
+	if wt.audioHandler != nil {
+		wt.audioHandler.PlayPeriodTransition(types.PeriodWork)
+		// Call out the round number (blocking - waits for completion)
+		totalRounds := len(wt.workout.Rounds)
+		wt.audioHandler.PlayRoundCallout(wt.currentRound, totalRounds)
+		// Call out the combo for this round (blocking - waits for completion)
+		wt.audioHandler.PlayComboCallout(round.Combo, wt.stance)
+	}
+
+	// Now that audio announcements are complete, notify display handler
+	// This will start the tempo ticker, which will play the first beep when timer starts
 	if wt.displayHandler != nil {
 		wt.displayHandler.OnPeriodStart(types.PeriodWork, wt.currentRound, round.WorkDuration)
 	}
 
-	if wt.audioHandler != nil {
-		wt.audioHandler.PlayPeriodTransition(types.PeriodWork)
-		// Call out the combo for this round
-		wt.audioHandler.PlayComboCallout(round.Combo, wt.stance)
-	}
-
+	// Start the timer AFTER announcements complete
+	// The first beep will play immediately when the timer starts (via tempo ticker)
 	return wt.workTimer.Start()
 }
 
@@ -192,6 +212,11 @@ func (wt *WorkoutTimer) onWorkPeriodComplete() {
 
 // startRestPeriod starts a rest period for the current round
 func (wt *WorkoutTimer) startRestPeriod() error {
+	// Add bounds check before array access (same as startWorkPeriod has)
+	// This prevents panic when currentRound is 0 or out of bounds (e.g., after Stop() is called)
+	if wt.currentRound <= 0 || wt.currentRound > len(wt.workout.Rounds) {
+		return fmt.Errorf("invalid currentRound: %d (expected 1-%d)", wt.currentRound, len(wt.workout.Rounds))
+	}
 	round := wt.workout.Rounds[wt.currentRound-1]
 	wt.restTimer = NewRestPeriodTimer(round.RestDuration)
 
@@ -253,6 +278,30 @@ func (wt *WorkoutTimer) onRestPeriodComplete() {
 
 // completeWorkout handles workout completion
 func (wt *WorkoutTimer) completeWorkout() {
+	// Ensure we only complete once
+	if wt.currentRound == 0 {
+		// Already completed, avoid double completion
+		return
+	}
+
+	// Store current round before marking as complete
+	completedRound := wt.currentRound
+	wt.currentRound = 0 // Mark as completed early to prevent re-entry
+
+	// Use defer with recover to ensure callback is called even if handlers panic
+	// This MUST be declared at the very beginning, BEFORE any handler calls,
+	// to properly catch panics from displayHandler and audioHandler
+	defer func() {
+		if r := recover(); r != nil {
+			// If there was a panic, still try to call the callback
+			if wt.onWorkoutComplete != nil {
+				wt.onWorkoutComplete()
+			}
+			panic(r) // Re-panic after calling callback
+		}
+	}()
+
+	// Call handlers - these are now protected by the defer above
 	if wt.displayHandler != nil {
 		wt.displayHandler.OnWorkoutComplete()
 	}
@@ -261,7 +310,13 @@ func (wt *WorkoutTimer) completeWorkout() {
 		wt.audioHandler.PlayWorkoutComplete()
 	}
 
+	// Call the completion callback last, after all handlers have been notified
+	// This is also protected by the defer, so it will be called even if handlers panic
 	if wt.onWorkoutComplete != nil {
 		wt.onWorkoutComplete()
+	} else {
+		// Debug: callback is nil - this shouldn't happen if test sets it up correctly
+		// But we can't log here without importing log package, so just continue
+		_ = completedRound // Use variable to avoid unused warning
 	}
 }

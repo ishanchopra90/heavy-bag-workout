@@ -34,9 +34,14 @@ func NewComboGenerator(includeDefensive bool) *ComboGenerator {
 
 // GenerateCombo generates a random combo with the specified number of moves
 // minMoves and maxMoves define the range of moves in the combo
+// Maximum moves per combo is limited to 5
 func (cg *ComboGenerator) GenerateCombo(minMoves, maxMoves int) models.Combo {
 	if minMoves < 1 {
 		minMoves = 1
+	}
+	// Enforce maximum limit of 5 moves per combo
+	if maxMoves > 5 {
+		maxMoves = 5
 	}
 	if maxMoves < minMoves {
 		maxMoves = minMoves

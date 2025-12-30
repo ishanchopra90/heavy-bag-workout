@@ -10,7 +10,6 @@ import (
 	"heavybagworkout/internal/timer"
 	"os"
 	"strings"
-	"time"
 )
 
 func main() {
@@ -30,6 +29,7 @@ func main() {
 		openAIAPIKey       = flag.String("openai-api-key", "", "OpenAI API key (overrides config and env var)")
 		stanceFlag         = flag.String("stance", "", "Boxer's stance: orthodox or southpaw (overrides config/preset)")
 		tempoFlag          = flag.String("tempo", "", "Workout tempo: slow (5s), medium (4s), fast (3s), or superfast (2s) (default: slow)")
+		saveAudioPath      = flag.String("save", "", "Save audio output to file (e.g., workout.m4a, workout.mp3). Format determined by extension.")
 		showVersion        = flag.Bool("version", false, "Show version information")
 		showHelp           = flag.Bool("help", false, "Show help message")
 	)
@@ -135,11 +135,20 @@ func main() {
 	}
 
 	// Parse and validate tempo flag
+	tempo := models.TempoSlow // Default
 	if *tempoFlag != "" {
-		if !isValidTempo(*tempoFlag) {
+		tempo = models.ParseTempo(*tempoFlag)
+		// Check if parsing failed (returns unknown)
+		if tempo == models.TempoUnknown {
 			fmt.Fprintf(os.Stderr, "Error: invalid tempo '%s'. Must be one of: slow, medium, fast, superfast\n", *tempoFlag)
 			os.Exit(1)
 		}
+	}
+
+	// Validate max moves against tempo limit (after tempo is parsed)
+	if appConfig.Pattern.MaxMoves > tempo.MaxMovesLimit() {
+		fmt.Fprintf(os.Stderr, "Error: maximum moves per combo cannot exceed %d for %s tempo (got %d)\n", tempo.MaxMovesLimit(), tempo.DisplayName(), appConfig.Pattern.MaxMoves)
+		os.Exit(1)
 	}
 
 	var workout models.Workout
@@ -175,17 +184,47 @@ func main() {
 	fmt.Printf("  Total rounds: %d\n", len(workout.Rounds))
 	fmt.Println()
 
-	// Parse tempo flag
-	tempo := parseTempo(*tempoFlag)
+	// Convert tempo to duration for the CLI interface
+	tempoDuration := tempo.Duration()
 
 	// Create audio handler (enabled by default)
-	audioHandler := timer.NewDefaultAudioCueHandler(true)
+	var audioHandler timer.AudioCueHandler
+	var recordingHandler *timer.RecordingAudioCueHandler
+
+	if *saveAudioPath != "" {
+		// Create recording audio handler with workout and tempo information
+		var err error
+		recordingHandler, err = timer.NewRecordingAudioCueHandlerWithWorkout(*saveAudioPath, workout, tempoDuration)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error creating audio recording handler: %v\n", err)
+			os.Exit(1)
+		}
+		audioHandler = recordingHandler
+		fmt.Printf("  Audio will be saved to: %s\n", *saveAudioPath)
+		fmt.Println()
+	} else {
+		audioHandler = timer.NewDefaultAudioCueHandler(true)
+	}
 
 	// Create and run CLI interface with stance and tempo
-	workoutInterface := cli.NewWorkoutInterfaceWithStanceAndTempo(workout, audioHandler, *stance, tempo)
+	workoutInterface := cli.NewWorkoutInterfaceWithStanceAndTempo(workout, audioHandler, *stance, tempoDuration)
 	if err := workoutInterface.Run(); err != nil {
+		// Cleanup recording handler if workout was interrupted
+		if recordingHandler != nil {
+			recordingHandler.Cleanup()
+		}
 		fmt.Fprintf(os.Stderr, "Error running workout: %v\n", err)
 		os.Exit(1)
+	}
+
+	// If recording handler exists and workout completed, wait for finalization to complete
+	if recordingHandler != nil {
+		fmt.Println("\nFinalizing audio recording...")
+		if err := recordingHandler.WaitForFinalization(); err != nil {
+			fmt.Fprintf(os.Stderr, "Error finalizing audio recording: %v\n", err)
+			os.Exit(1)
+		}
+		fmt.Printf("Audio saved to: %s\n", *saveAudioPath)
 	}
 }
 
@@ -220,6 +259,7 @@ func printHelp() {
 	fmt.Println("  --openai-api-key string   OpenAI API key (overrides config and env var)")
 	fmt.Println("  --stance string           Boxer's stance: orthodox or southpaw (overrides config/preset, defaults to orthodox if not set)")
 	fmt.Println("  --tempo string            Workout tempo: slow (5s), medium (4s), fast (3s), or superfast (2s) (default: slow)")
+	fmt.Println("  --save string             Save audio output to file (e.g., workout.m4a, workout.mp3). Format determined by extension.")
 	fmt.Println("  --version                 Show version information")
 	fmt.Println("  --help                    Show this help message")
 	fmt.Println("\nExamples:")
@@ -229,6 +269,7 @@ func printHelp() {
 	fmt.Println("  heavybagworkout --preset beta_style --stance southpaw")
 	fmt.Println("  heavybagworkout --pattern pyramid --min-moves 2 --max-moves 6 --include-defensive")
 	fmt.Println("  heavybagworkout --preset power --tempo fast")
+	fmt.Println("  heavybagworkout --preset beta_style --save workout.m4a")
 	fmt.Println("\nConfiguration Priority:")
 	fmt.Println("  1. Command-line flags (highest priority)")
 	fmt.Println("  2. Config file (--config)")
@@ -248,37 +289,5 @@ func parseStance(s string) *models.Stance {
 		return &stance
 	default:
 		return nil
-	}
-}
-
-// isValidTempo checks if a tempo string is valid
-func isValidTempo(s string) bool {
-	s = strings.ToLower(strings.TrimSpace(s))
-	validTempos := map[string]bool{
-		"slow":      true,
-		"medium":    true,
-		"fast":      true,
-		"superfast": true,
-	}
-	return validTempos[s]
-}
-
-// parseTempo parses a tempo string and returns the corresponding duration
-// Valid values: "slow" or "" (default, 5s), "medium" (4s), "fast" (3s), "superfast" (2s)
-func parseTempo(s string) time.Duration {
-	s = strings.ToLower(strings.TrimSpace(s))
-	switch s {
-	case "medium":
-		return 4 * time.Second
-	case "fast":
-		return 3 * time.Second
-	case "superfast":
-		return 2 * time.Second
-	case "slow", "":
-		// Default to slow (5 seconds)
-		return 5 * time.Second
-	default:
-		// Invalid tempo, default to slow
-		return 5 * time.Second
 	}
 }

@@ -33,12 +33,30 @@ HeavyBagWorkout/
 │   ├── timer/              # Timer functionality and audio cues
 │   ├── config/             # Configuration management
 │   ├── cli/                # CLI interface
+│   ├── gui/                # GUI interface (Gio UI)
 │   └── mocks/              # Generated mocks for testing
+├── assets/                 # Animation sprite assets
+│   ├── orthodox/           # Orthodox stance sprites
+│   └── southpaw/           # Southpaw stance sprites
 ├── configs/                # Preset configuration files
+├── docs/                   # Documentation
+│   ├── TIMER_ARCHITECTURE.md
+│   ├── ANIMATION_SYSTEM.md
+│   ├── ASSET_REQUIREMENTS.md
+│   └── LLM_WORKOUT_GENERATION.md
 ├── go.mod
 ├── go.sum
 └── README.md
 ```
+
+## Documentation
+
+Additional documentation is available in the `docs/` directory:
+
+- **[Timer Architecture](docs/TIMER_ARCHITECTURE.md)**: Detailed explanation of the timer system and how it's used in CLI and GUI
+- **[Animation System](docs/ANIMATION_SYSTEM.md)**: Architecture of the GUI animation system
+- **[Asset Requirements](docs/ASSET_REQUIREMENTS.md)**: Asset file formats, naming conventions, and requirements
+- **[LLM Workout Generation](docs/LLM_WORKOUT_GENERATION.md)**: How the AI-powered workout generation works, including prompt generation and the internal feedback mechanism
 
 ## Setup Instructions
 
@@ -97,6 +115,7 @@ Start with a preset configuration:
 | `--openai-api-key` | OpenAI API key | `--openai-api-key sk-...` |
 | `--stance` | Boxer's stance (orthodox, southpaw) | `--stance southpaw` |
 | `--tempo` | Workout tempo: Slow (5s), Medium (4s), Fast (3s), Superfast (2s) | `--tempo fast` |
+| `--save` | Save audio output to file (format determined by extension: .mp3, .m4a, .wav) | `--save workout.m4a` |
 | `--version` | Show version information | `--version` |
 | `--help` | Show help message | `--help` |
 
@@ -127,6 +146,11 @@ Start with a preset configuration:
 **Southpaw stance with LLM generation:**
 ```bash
 ./heavybagworkout --preset power --stance southpaw --use-llm
+```
+
+**Save audio output to file:**
+```bash
+./heavybagworkout --preset beta_style --save workout.m4a
 ```
 
 **Using a custom configuration file:**
@@ -206,6 +230,91 @@ The app provides audio feedback during workouts:
 
 Audio cues use system text-to-speech and are enabled by default.
 
+### Audio Recording
+
+You can save the entire audio output of a workout to a file using the `--save` flag:
+
+```bash
+# For Android (recommended)
+./heavybagworkout --preset beta_style --save workout.mp3
+
+# For iOS/iPhone
+./heavybagworkout --preset beta_style --save workout.m4a
+```
+
+The audio file will contain:
+- All beeps during work periods (at tempo intervals)
+- Voice announcements ("work", "rest")
+- Round number callouts ("round 1 of 50", etc.)
+- Combo callouts at the start of each round
+- Rest period countdown beeps (last 3 seconds)
+- "Workout complete" announcement
+
+**Supported formats:**
+- `.mp3` (recommended for Android and universal compatibility - works on all platforms)
+- `.m4a` (recommended for iOS/iPhone compatibility, also works on modern Android)
+- `.wav` (uncompressed, larger file size, works everywhere but not ideal for mobile)
+
+The format is automatically determined by the file extension. If no extension is provided, the default is `.mp3` (best for Android and universal compatibility).
+
+**Requirements:**
+- **ffmpeg**: Required for system audio capture. [Installation instructions](https://ffmpeg.org/download.html)
+  - macOS: `brew install ffmpeg`
+  - Linux: `sudo apt install ffmpeg` (Debian/Ubuntu) or `sudo yum install ffmpeg` (RHEL/CentOS)
+  - Windows: Download from [ffmpeg.org](https://ffmpeg.org/download.html) or use `choco install ffmpeg` (Chocolatey)
+
+**macOS Setup (Required for audio recording):**
+The `--save` feature uses system audio capture on macOS, which requires a virtual audio device to route audio output for recording.
+
+1. **Install BlackHole** (free virtual audio driver):
+   - Download from: https://github.com/ExistentialAudio/BlackHole
+   - Follow installation instructions
+   
+2. **Configure Audio MIDI Setup**:
+   - Open **Audio MIDI Setup** (Applications > Utilities)
+   - Create a **Multi-Output Device**:
+     - Click "+" → "Create Multi-Output Device"
+     - Check both "BlackHole 2ch" and "Built-in Output"
+     - Set this as your default output in System Preferences > Sound
+   
+3. **Grant Permissions**:
+   - System Preferences > Security & Privacy > Privacy
+   - Grant screen recording and microphone access if prompted
+
+**Note:** This is a temporary implementation. A more portable solution will be implemented in a later development stage.
+
+### Debug Logging
+
+To troubleshoot audio recording issues or see detailed diagnostic information, you can enable debug logging using environment variables:
+
+```bash
+# Enable debug logging
+HEAVYBAG_DEBUG=1 ./heavybagworkout --preset beta_style --save workout.mp3
+
+# Or use the generic DEBUG flag
+DEBUG=1 ./heavybagworkout --preset beta_style --save workout.mp3
+```
+
+When enabled, debug logging will show:
+- Available audio devices and BlackHole detection
+- FFmpeg command being executed
+- Recording start/stop status
+- Audio file creation and size information
+
+**Example output:**
+```
+Debug: ffmpeg device list output:
+[AVFoundation audio devices:]
+[0] Built-in Microphone
+[1] BlackHole 2ch
+...
+Debug: Found BlackHole at device index 1
+Debug: Started system audio recording from BlackHole (device 1) to workout.mp3
+Debug: ffmpeg command: ffmpeg -f avfoundation -i :1 -acodec libmp3lame ...
+Debug: Stopped system audio recording
+Debug: Audio file created successfully: workout.mp3 (245760 bytes)
+```
+
 ## Configuration Files
 
 Configuration files are JSON format. Example structure:
@@ -247,10 +356,85 @@ During a workout:
 
 Note: Pause/resume functionality will be available in the future GUI version.
 
+## GUI Usage
+
+The application includes a graphical user interface (GUI) built with Gio UI. The GUI provides a visual workout experience with animated character sprites.
+
+### Starting the GUI
+
+To start the GUI application, use the `--gui` flag:
+
+```bash
+./heavybagworkout --gui
+```
+
+Or build and run the GUI directly:
+
+```bash
+go run ./cmd/heavybagworkout --gui
+```
+
+### GUI Features
+
+- **Visual Workout Display**: See your workout progress with animated character sprites
+- **Form-Based Configuration**: Easy-to-use form interface for setting workout parameters
+- **Real-Time Animation**: Watch Scrappy Doo perform the combos in real-time
+- **Tempo-Based Animations**: Animations sync with your selected tempo
+- **Pause/Resume**: Pause and resume your workout at any time
+- **Workout Preview**: Preview all combos before starting the workout
+- **Configuration Management**: Save and load workout configurations
+
+### GUI Workflow
+
+1. **Configure Workout**: Fill out the form with your desired workout parameters
+2. **Preview Workout**: Review the generated workout and combos
+3. **Start Workout**: Begin the workout and watch the animations
+4. **Follow Along**: Perform the combos as Scrappy Doo demonstrates them
+5. **Complete**: View completion screen when workout finishes
+
+### GUI-Specific Features
+
+- **Animation System**: Character sprite animations for all punches and defensive moves
+- **Stance Support**: Visual animations adapt to your selected stance (orthodox/southpaw)
+- **Tempo Visualization**: Animations play at the tempo you select
+- **Visual Feedback**: "Go!" indicator appears when it's time to perform a combo
+- **Progress Tracking**: Visual progress bar and round counter
+
+### GUI Configuration
+
+All CLI flags are available in the GUI through the form interface:
+- Work duration, rest duration, total rounds
+- Workout pattern (linear, pyramid, random, constant)
+- Min/max moves per combo (with tempo-based limits)
+- Include defensive moves toggle
+- Stance selection (orthodox/southpaw)
+- Tempo selection (Slow, Medium, Fast, Superfast)
+- LLM generation toggle
+- OpenAI API key input
+- Preset selection
+
+### GUI vs CLI
+
+**Use CLI when:**
+- You prefer terminal-based interfaces
+- You want to save audio output to files
+- You're running on a headless server
+- You need scriptable/automated workflows
+
+**Use GUI when:**
+- You want visual feedback and animations
+- You prefer form-based configuration
+- You want to see the character performing combos
+- You're using the app interactively
+
 ## Development Status
 
-- **V1** - CLI (MVP is out)
-- **V2** - GUI with animations of Scrappy Doo in fighting poses(in development...)
+**V1** - CLI (MVP is complete)
+**V2** - GUI with animations of Scrappy Doo in fighting poses (Complete)
+**Future Enhancements** 
+- ability to change boxer avatar in GUI(currently fixed at boxer dog)
+- more polished sounds/cool background music scores
+- abilitiy to select model in a GUI field (currently defaults to mini can be loaded only from json config)
 
 ## License
 

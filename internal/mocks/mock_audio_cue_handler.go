@@ -48,27 +48,39 @@ func (mr *MockAudioCueHandlerMockRecorder) PlayBeep() *gomock.Call {
 }
 
 // PlayComboCallout mocks base method.
-func (m *MockAudioCueHandler) PlayComboCallout(arg0 models.Combo, arg1 models.Stance) {
+func (m *MockAudioCueHandler) PlayComboCallout(combo models.Combo, stance models.Stance) {
 	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "PlayComboCallout", arg0, arg1)
+	m.ctrl.Call(m, "PlayComboCallout", combo, stance)
 }
 
 // PlayComboCallout indicates an expected call of PlayComboCallout.
-func (mr *MockAudioCueHandlerMockRecorder) PlayComboCallout(arg0, arg1 interface{}) *gomock.Call {
+func (mr *MockAudioCueHandlerMockRecorder) PlayComboCallout(combo, stance interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PlayComboCallout", reflect.TypeOf((*MockAudioCueHandler)(nil).PlayComboCallout), arg0, arg1)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PlayComboCallout", reflect.TypeOf((*MockAudioCueHandler)(nil).PlayComboCallout), combo, stance)
 }
 
 // PlayPeriodTransition mocks base method.
-func (m *MockAudioCueHandler) PlayPeriodTransition(arg0 types.PeriodType) {
+func (m *MockAudioCueHandler) PlayPeriodTransition(periodType types.PeriodType) {
 	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "PlayPeriodTransition", arg0)
+	m.ctrl.Call(m, "PlayPeriodTransition", periodType)
 }
 
 // PlayPeriodTransition indicates an expected call of PlayPeriodTransition.
-func (mr *MockAudioCueHandlerMockRecorder) PlayPeriodTransition(arg0 interface{}) *gomock.Call {
+func (mr *MockAudioCueHandlerMockRecorder) PlayPeriodTransition(periodType interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PlayPeriodTransition", reflect.TypeOf((*MockAudioCueHandler)(nil).PlayPeriodTransition), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PlayPeriodTransition", reflect.TypeOf((*MockAudioCueHandler)(nil).PlayPeriodTransition), periodType)
+}
+
+// PlayRoundCallout mocks base method.
+func (m *MockAudioCueHandler) PlayRoundCallout(roundNumber, totalRounds int) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "PlayRoundCallout", roundNumber, totalRounds)
+}
+
+// PlayRoundCallout indicates an expected call of PlayRoundCallout.
+func (mr *MockAudioCueHandlerMockRecorder) PlayRoundCallout(roundNumber, totalRounds interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PlayRoundCallout", reflect.TypeOf((*MockAudioCueHandler)(nil).PlayRoundCallout), roundNumber, totalRounds)
 }
 
 // PlayWorkoutComplete mocks base method.
@@ -93,4 +105,16 @@ func (m *MockAudioCueHandler) PlayWorkoutStart() {
 func (mr *MockAudioCueHandlerMockRecorder) PlayWorkoutStart() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PlayWorkoutStart", reflect.TypeOf((*MockAudioCueHandler)(nil).PlayWorkoutStart))
+}
+
+// Stop mocks base method.
+func (m *MockAudioCueHandler) Stop() {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "Stop")
+}
+
+// Stop indicates an expected call of Stop.
+func (mr *MockAudioCueHandlerMockRecorder) Stop() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Stop", reflect.TypeOf((*MockAudioCueHandler)(nil).Stop))
 }

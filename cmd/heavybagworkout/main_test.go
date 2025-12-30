@@ -460,20 +460,21 @@ func TestTempoFlag(t *testing.T) {
 
 	for _, tt := range testCases {
 		t.Run(tt.name, func(t *testing.T) {
-			// Test parseTempo function directly
-			tempo := parseTempo(tt.tempoFlag)
-			if tempo != tt.expectedTempo {
-				t.Errorf("parseTempo(%q) = %v, want %v", tt.tempoFlag, tempo, tt.expectedTempo)
+			// Test ParseTempo function directly
+			tempo := models.ParseTempo(tt.tempoFlag)
+			expectedDuration := tempo.Duration()
+			if expectedDuration != tt.expectedTempo {
+				t.Errorf("ParseTempo(%q).Duration() = %v, want %v", tt.tempoFlag, expectedDuration, tt.expectedTempo)
 			}
 
 			// Test validation
 			if tt.tempoFlag != "" {
-				isValid := isValidTempo(tt.tempoFlag)
+				isValid := tempo.String() != "unknown"
 				if tt.shouldError && isValid {
-					t.Errorf("isValidTempo(%q) = true, want false", tt.tempoFlag)
+					t.Errorf("ParseTempo(%q) should fail but returned valid tempo", tt.tempoFlag)
 				}
 				if !tt.shouldError && !isValid {
-					t.Errorf("isValidTempo(%q) = false, want true", tt.tempoFlag)
+					t.Errorf("ParseTempo(%q) should succeed but returned unknown", tt.tempoFlag)
 				}
 			}
 		})

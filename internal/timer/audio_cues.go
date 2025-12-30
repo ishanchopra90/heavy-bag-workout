@@ -8,19 +8,78 @@ import (
 	"os/exec"
 	"runtime"
 	"strings"
+	"sync"
 	"time"
 )
 
 // DefaultAudioCueHandler provides basic audio cues using system beep
 type DefaultAudioCueHandler struct {
-	enabled bool
+	enabled     bool
+	runningCmds []*exec.Cmd
+	cmdsMutex   sync.Mutex
 }
 
 // NewDefaultAudioCueHandler creates a new default audio cue handler
 func NewDefaultAudioCueHandler(enabled bool) *DefaultAudioCueHandler {
 	return &DefaultAudioCueHandler{
-		enabled: enabled,
+		enabled:     enabled,
+		runningCmds: make([]*exec.Cmd, 0),
 	}
+}
+
+// Stop cancels all running audio commands
+func (a *DefaultAudioCueHandler) Stop() {
+	a.cmdsMutex.Lock()
+	defer a.cmdsMutex.Unlock()
+
+	// Kill all running audio processes
+	for _, cmd := range a.runningCmds {
+		if cmd != nil && cmd.Process != nil {
+			cmd.Process.Kill()
+		}
+	}
+	a.runningCmds = a.runningCmds[:0] // Clear the slice
+}
+
+// RunningCommandsCount returns the number of currently running audio commands (for testing)
+func (a *DefaultAudioCueHandler) RunningCommandsCount() int {
+	a.cmdsMutex.Lock()
+	defer a.cmdsMutex.Unlock()
+	return len(a.runningCmds)
+}
+
+// trackAndWaitCommand starts a command, tracks it, waits for it to complete, then removes it
+// This allows commands to run sequentially (one after another) while still being cancellable
+func (a *DefaultAudioCueHandler) trackAndWaitCommand(cmd *exec.Cmd) error {
+	if cmd == nil {
+		return nil
+	}
+
+	// Start the command (non-blocking)
+	if err := cmd.Start(); err != nil {
+		return err
+	}
+
+	// Track the command
+	a.cmdsMutex.Lock()
+	a.runningCmds = append(a.runningCmds, cmd)
+	a.cmdsMutex.Unlock()
+
+	// Wait for command to complete (blocking, so next command waits)
+	err := cmd.Wait()
+
+	// Remove from tracking when command completes
+	a.cmdsMutex.Lock()
+	for i, c := range a.runningCmds {
+		if c == cmd {
+			// Remove from slice
+			a.runningCmds = append(a.runningCmds[:i], a.runningCmds[i+1:]...)
+			break
+		}
+	}
+	a.cmdsMutex.Unlock()
+
+	return err
 }
 
 // PlayBeep plays a simple beep sound
@@ -29,19 +88,26 @@ func (a *DefaultAudioCueHandler) PlayBeep() {
 		return
 	}
 
+	var cmd *exec.Cmd
 	switch runtime.GOOS {
 	case "darwin": // macOS
-		exec.Command("say", "-v", "Bells", "beep").Run()
+		cmd = exec.Command("say", "-v", "Bells", "beep")
 	case "linux":
 		// Try to use beep command or system bell
-		exec.Command("beep").Run()
-		fmt.Print("\a") // ASCII bell
+		cmd = exec.Command("beep")
+		fmt.Print("\a") // ASCII bell (can't cancel, but it's instant)
 	case "windows":
 		// Windows beep
-		fmt.Print("\a")
-		exec.Command("powershell", "-c", "[console]::beep(800,200)").Run()
+		fmt.Print("\a") // ASCII bell (can't cancel, but it's instant)
+		cmd = exec.Command("powershell", "-c", "[console]::beep(800,200)")
 	default:
 		fmt.Print("\a") // Fallback to ASCII bell
+		return
+	}
+
+	// Track and wait for beep command so it can be cancelled
+	if cmd != nil {
+		a.trackAndWaitCommand(cmd)
 	}
 }
 
@@ -54,10 +120,12 @@ func (a *DefaultAudioCueHandler) PlayPeriodTransition(periodType types.PeriodTyp
 	switch periodType {
 	case types.PeriodWork:
 		// Say "work" when transitioning to work period
-		exec.Command("say", "-v", "Alex", "work").Run()
+		cmd := exec.Command("say", "-v", "Alex", "work")
+		a.trackAndWaitCommand(cmd)
 	case types.PeriodRest:
 		// Say "rest" when transitioning to rest period
-		exec.Command("say", "-v", "Alex", "rest").Run()
+		cmd := exec.Command("say", "-v", "Alex", "rest")
+		a.trackAndWaitCommand(cmd)
 	}
 }
 
@@ -84,10 +152,12 @@ func (a *DefaultAudioCueHandler) PlayWorkoutComplete() {
 	}
 
 	// Say "workout complete" when workout finishes
-	exec.Command("say", "-v", "Alex", "workout complete").Run()
+	cmd := exec.Command("say", "-v", "Alex", "workout complete")
+	a.trackAndWaitCommand(cmd)
 }
 
 // PlayComboCallout speaks the combo moves using text-to-speech
+// Note: No beep is played here - the first beep should play when the timer starts
 func (a *DefaultAudioCueHandler) PlayComboCallout(combo models.Combo, stance models.Stance) {
 	if !a.enabled {
 		return
@@ -101,21 +171,57 @@ func (a *DefaultAudioCueHandler) PlayComboCallout(combo models.Combo, stance mod
 	comboText := comboToSpeechString(combo, stance)
 
 	// Use system text-to-speech
+	var cmd *exec.Cmd
 	switch runtime.GOOS {
 	case "darwin": // macOS
 		// Use 'say' command with a clear voice
-		exec.Command("say", "-v", "Alex", comboText).Run()
+		cmd = exec.Command("say", "-v", "Alex", comboText)
 	case "linux":
 		// Try espeak or festival
-		exec.Command("espeak", comboText).Run()
+		cmd = exec.Command("espeak", comboText)
 		// Fallback to festival if espeak not available
 		// exec.Command("festival", "--tts").Run() // Would need stdin
 	case "windows":
 		// Use PowerShell text-to-speech
-		exec.Command("powershell", "-c", fmt.Sprintf("Add-Type -AssemblyName System.Speech; $synth = New-Object System.Speech.Synthesis.SpeechSynthesizer; $synth.Speak('%s')", comboText)).Run()
+		cmd = exec.Command("powershell", "-c", fmt.Sprintf("Add-Type -AssemblyName System.Speech; $synth = New-Object System.Speech.Synthesis.SpeechSynthesizer; $synth.Speak('%s')", comboText))
+	default:
+		// Fallback: no audio output
+		return
+	}
+	if cmd != nil {
+		a.trackAndWaitCommand(cmd)
+	}
+}
+
+// PlayRoundCallout speaks the round number using text-to-speech
+func (a *DefaultAudioCueHandler) PlayRoundCallout(roundNumber int, totalRounds int) {
+	if !a.enabled {
+		return
+	}
+
+	// Convert round numbers to speech-friendly string
+	roundText := roundToSpeechString(roundNumber, totalRounds)
+
+	// Use system text-to-speech
+	var cmd *exec.Cmd
+	switch runtime.GOOS {
+	case "darwin": // macOS
+		// Use 'say' command with a clear voice
+		cmd = exec.Command("say", "-v", "Alex", roundText)
+	case "linux":
+		// Try espeak or festival
+		cmd = exec.Command("espeak", roundText)
+		// Fallback to festival if espeak not available
+	case "windows":
+		// Use PowerShell text-to-speech
+		cmd = exec.Command("powershell", "-c", fmt.Sprintf("Add-Type -AssemblyName System.Speech; $synth = New-Object System.Speech.Synthesis.SpeechSynthesizer; $synth.Speak('%s')", roundText))
 	default:
 		// Fallback: just beep
 		a.PlayBeep()
+		return
+	}
+	if cmd != nil {
+		a.trackAndWaitCommand(cmd)
 	}
 }
 
@@ -157,6 +263,12 @@ func comboToSpeechString(combo models.Combo, stance models.Stance) string {
 	return allButLast + ", then " + parts[len(parts)-1]
 }
 
+// roundToSpeechString converts round numbers to a natural speech string
+// Example: "round 1 of 50", "round 2 of 50", etc.
+func roundToSpeechString(roundNumber int, totalRounds int) string {
+	return fmt.Sprintf("round %d of %d", roundNumber, totalRounds)
+}
+
 // NoOpAudioCueHandler is a no-op implementation for when audio is disabled
 type NoOpAudioCueHandler struct{}
 
@@ -170,6 +282,8 @@ func (a *NoOpAudioCueHandler) PlayPeriodTransition(types.PeriodType)        {}
 func (a *NoOpAudioCueHandler) PlayWorkoutStart()                            {}
 func (a *NoOpAudioCueHandler) PlayWorkoutComplete()                         {}
 func (a *NoOpAudioCueHandler) PlayComboCallout(models.Combo, models.Stance) {}
+func (a *NoOpAudioCueHandler) PlayRoundCallout(int, int)                    {}
+func (a *NoOpAudioCueHandler) Stop()                                        {}
 
 // FileAudioCueHandler plays audio from files (for future implementation)
 type FileAudioCueHandler struct {
@@ -271,6 +385,21 @@ func (f *FileAudioCueHandler) PlayComboCallout(combo models.Combo, stance models
 	// In the future, could use pre-recorded audio files
 	defaultHandler := NewDefaultAudioCueHandler(true)
 	defaultHandler.PlayComboCallout(combo, stance)
+}
+
+func (f *FileAudioCueHandler) PlayRoundCallout(roundNumber int, totalRounds int) {
+	if !f.enabled {
+		return
+	}
+	// For file-based handler, fall back to default text-to-speech
+	// In the future, could use pre-recorded audio files
+	defaultHandler := NewDefaultAudioCueHandler(true)
+	defaultHandler.PlayRoundCallout(roundNumber, totalRounds)
+}
+
+func (f *FileAudioCueHandler) Stop() {
+	// FileAudioCueHandler uses Start() which runs asynchronously, so we can't easily cancel
+	// For now, this is a no-op - file playback processes will complete on their own
 }
 
 func (f *FileAudioCueHandler) playFile(path string) {

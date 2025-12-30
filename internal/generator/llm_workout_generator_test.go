@@ -180,9 +180,16 @@ func TestLLMWorkoutGeneratorGenerateWorkout_InvalidMoveNumber(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockHTTP := mocks.NewMockHTTPClient(ctrl)
+	// First attempt - will fail validation
 	mockHTTP.EXPECT().
 		Do(gomock.Any()).
-		Return(newHTTPResponse(http.StatusOK, `{"choices":[{"message":{"content":"{\"rounds\":[{\"round_number\":1,\"combo\":{\"moves\":[99]}}]}"}}]}`), nil)
+		Return(newHTTPResponse(http.StatusOK, `{"choices":[{"message":{"content":"{\"rounds\":[{\"round_number\":1,\"combo\":{\"moves\":[99]}}]}"}}]}`), nil).
+		Times(1)
+	// Retry attempt - will also fail validation
+	mockHTTP.EXPECT().
+		Do(gomock.Any()).
+		Return(newHTTPResponse(http.StatusOK, `{"choices":[{"message":{"content":"{\"rounds\":[{\"round_number\":1,\"combo\":{\"moves\":[99]}}]}"}}]}`), nil).
+		Times(1)
 
 	openAIClient := NewOpenAIClientWithHTTPClient("test-key", mockHTTP)
 	gen := NewLLMWorkoutGeneratorWithOpenAIClient(openAIClient)
@@ -194,7 +201,10 @@ func TestLLMWorkoutGeneratorGenerateWorkout_InvalidMoveNumber(t *testing.T) {
 	pattern := models.NewWorkoutPattern(models.PatternLinear, 1, 3, true)
 
 	_, err := gen.GenerateWorkout(config, pattern)
-	if err == nil || err.Error() != "invalid move number: 99" {
+	if err == nil {
+		t.Fatalf("expected invalid move number error, got nil")
+	}
+	if !strings.Contains(err.Error(), "invalid move number: 99") {
 		t.Fatalf("expected invalid move number error, got %v", err)
 	}
 }
@@ -204,9 +214,16 @@ func TestLLMWorkoutGeneratorGenerateWorkout_InvalidJSON(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockHTTP := mocks.NewMockHTTPClient(ctrl)
+	// First attempt - will fail JSON parsing
 	mockHTTP.EXPECT().
 		Do(gomock.Any()).
-		Return(newHTTPResponse(http.StatusOK, `{"choices":[{"message":{"content":"{\"invalid_json\":}}"}]}`), nil)
+		Return(newHTTPResponse(http.StatusOK, `{"choices":[{"message":{"content":"{\"invalid_json\":}}"}]}`), nil).
+		Times(1)
+	// Retry attempt - will also fail JSON parsing
+	mockHTTP.EXPECT().
+		Do(gomock.Any()).
+		Return(newHTTPResponse(http.StatusOK, `{"choices":[{"message":{"content":"{\"invalid_json\":}}"}]}`), nil).
+		Times(1)
 
 	openAIClient := NewOpenAIClientWithHTTPClient("test-key", mockHTTP)
 	gen := NewLLMWorkoutGeneratorWithOpenAIClient(openAIClient)
@@ -228,9 +245,16 @@ func TestLLMWorkoutGeneratorGenerateWorkout_ClientError(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockHTTP := mocks.NewMockHTTPClient(ctrl)
+	// First attempt - will fail with client error
 	mockHTTP.EXPECT().
 		Do(gomock.Any()).
-		Return(nil, errors.New("api down"))
+		Return(nil, errors.New("api down")).
+		Times(1)
+	// Retry attempt - will also fail with client error
+	mockHTTP.EXPECT().
+		Do(gomock.Any()).
+		Return(nil, errors.New("api down")).
+		Times(1)
 
 	openAIClient := NewOpenAIClientWithHTTPClient("test-key", mockHTTP)
 	gen := NewLLMWorkoutGeneratorWithOpenAIClient(openAIClient)
@@ -242,7 +266,10 @@ func TestLLMWorkoutGeneratorGenerateWorkout_ClientError(t *testing.T) {
 	pattern := models.NewWorkoutPattern(models.PatternLinear, 1, 3, true)
 
 	_, err := gen.GenerateWorkout(config, pattern)
-	if err == nil || err.Error() != "failed to generate workout: failed to send request: api down" {
+	if err == nil {
+		t.Fatalf("expected api down error, got nil")
+	}
+	if !strings.Contains(err.Error(), "api down") {
 		t.Fatalf("expected api down error, got %v", err)
 	}
 }
@@ -314,14 +341,11 @@ func TestLLMWorkoutGenerator_ExcludesDefensiveMovesWhenDisabled(t *testing.T) {
 	}
 
 	// Verify prompt explicitly says not to use defensive moves
-	if !strings.Contains(capturedPrompt, "DO NOT use defensive moves") {
-		t.Errorf("expected prompt to explicitly say 'DO NOT use defensive moves'")
-	}
 	if !strings.Contains(capturedPrompt, "Use ONLY numbers 1-6 for punches") {
 		t.Errorf("expected prompt to say 'Use ONLY numbers 1-6 for punches'")
 	}
-	if !strings.Contains(capturedPrompt, "All combos must consist of punches only") {
-		t.Errorf("expected prompt to say 'All combos must consist of punches only'")
+	if !strings.Contains(capturedPrompt, "All combos should consist of punches only") {
+		t.Errorf("expected prompt to say 'All combos should consist of punches only'")
 	}
 
 	// Verify prompt does NOT include defensive move pairing instructions

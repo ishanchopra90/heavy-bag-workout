@@ -192,3 +192,53 @@ func TestWorkoutTimer_Stop(t *testing.T) {
 		t.Fatalf("expected round 0 after stop, got %d", timer.CurrentRound())
 	}
 }
+
+// TestWorkoutTimer_StopCancelsAudio verifies that calling Stop() cancels all running audio commands
+// This test catches regressions where audio continues playing after Stop() is called
+func TestWorkoutTimer_StopCancelsAudio(t *testing.T) {
+	workout := models.NewWorkout(
+		models.NewWorkoutConfig(10*time.Second, 5*time.Second, 1),
+		[]models.WorkoutRound{
+			models.NewWorkoutRound(1, models.NewCombo([]models.Move{
+				models.NewPunchMove(models.Jab),
+				models.NewPunchMove(models.Cross),
+			}), 10*time.Second, 5*time.Second),
+		},
+	)
+
+	// Create a real audio handler to test cancellation
+	audioHandler := NewDefaultAudioCueHandler(true)
+	timer := NewWorkoutTimer(workout)
+	timer.SetAudioHandler(audioHandler)
+
+	// Start the workout - this will trigger audio announcements
+	if err := timer.Start(); err != nil {
+		t.Fatalf("unexpected error starting workout timer: %v", err)
+	}
+
+	// Wait a bit for audio to start playing (announcements are blocking, so we wait for them to start)
+	time.Sleep(100 * time.Millisecond)
+
+	// Count running commands before stop
+	commandsBeforeStop := audioHandler.RunningCommandsCount()
+
+	// Stop the timer - this should cancel all audio
+	timer.Stop()
+
+	// Wait a bit to allow cancellation to take effect
+	time.Sleep(200 * time.Millisecond)
+
+	// Verify all commands were cancelled
+	commandsAfterStop := audioHandler.RunningCommandsCount()
+
+	// After Stop(), all commands should be cancelled (list should be empty)
+	if commandsAfterStop != 0 {
+		t.Errorf("expected 0 running commands after Stop(), got %d (commands before stop: %d)",
+			commandsAfterStop, commandsBeforeStop)
+	}
+
+	// Verify timer is stopped
+	if timer.CurrentRound() != 0 {
+		t.Errorf("expected round 0 after stop, got %d", timer.CurrentRound())
+	}
+}

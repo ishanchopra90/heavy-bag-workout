@@ -44,6 +44,10 @@ func (wg *WorkoutGenerator) GenerateWorkout(config models.WorkoutConfig, pattern
 	if pattern.MinMoves <= 0 {
 		pattern.MinMoves = 1
 	}
+	// Enforce maximum limit of 5 moves per combo
+	if pattern.MaxMoves > 5 {
+		pattern.MaxMoves = 5
+	}
 	if pattern.MaxMoves < pattern.MinMoves {
 		pattern.MaxMoves = pattern.MinMoves
 	}

@@ -1,9 +1,26 @@
 # Puppy Power - Heavy Bag Workout App
 
-A Go-based application that generates randomized boxing workouts with combinations of punches and defensive moves. The app provides an interactive CLI interface for heavy bag training with customizable workout patterns, timing, and audio cues.
+A Go-based application that generates randomized boxing workouts with combinations of punches and defensive moves. The app provides both a **graphical user interface (GUI)** with animated character sprites and a **command-line interface (CLI)** for heavy bag training with customizable workout patterns, timing, and audio cues.
+
+## Screenshots
+
+### GUI Interface
+
+![Configuration Screen](screenshots/gui_config_screen.png)
+*Main configuration screen with form interface for setting workout parameters*
+
+![Configuration Screen with LLM Option](screenshots/gui_config_screen_llm_option.png)
+*Configuration screen showing LLM generation option enabled*
+
+![Workout Confirmation Screen](screenshots/gui_workout_confirmation_screen.png)
+*Preview and confirmation screen showing generated workout before starting*
+
+![Work Period Screen](screenshots/gui_work_period_screen.png)
+*Active workout display with animated character sprites performing combos*
 
 ## Features
 
+### Core Workout Features
 - **6 Boxing Punches**: Jab, Cross, Lead Hook, Rear Hook, Lead Uppercut, Rear Uppercut
 - **6 Defensive Moves**: Left Slip, Right Slip, Left Roll, Right Roll, Pull Back, Duck
 - **Randomized Workouts**: Generates unique combinations of punches and defensive moves
@@ -12,14 +29,27 @@ A Go-based application that generates randomized boxing workouts with combinatio
 - **Configurable Timing**: Customize work and rest periods per round
 - **Preset Configurations**: Quick-start with pre-configured workouts (beta_style, endurance, power)
 - **LLM Integration**: Optional AI-powered workout generation using OpenAI's GPT models
+- **Configuration Files**: JSON-based configuration for custom workout setups
+
+### GUI Features
+- **Visual Workout Display**: Animated character sprites showing boxing moves in real-time
+- **Form-Based Configuration**: Intuitive form interface for setting workout parameters
+- **Tempo-Based Animations**: Animations synchronized with selected tempo (Slow, Medium, Fast, Superfast)
+- **Pause/Resume**: Pause and resume workouts at any time
+- **Workout Preview**: Preview all combos before starting
+- **Visual Feedback**: "Go!" indicator and progress tracking
+- **Stance-Aware Animations**: Visual animations adapt to orthodox/southpaw stance
+
+### CLI Features
+- **Interactive Terminal Display**: Real-time workout display with progress tracking
 - **Audio Cues**: 
   - Beep at configurable intervals during work periods (default: 5 seconds, adjustable via `--tempo`)
   - Voice announcements for period transitions ("work", "rest")
   - Combo callouts at the start of each round
   - "Workout complete" announcement at the end
   - 3 beeps in the last 3 seconds of rest periods to signal readiness
-- **Interactive CLI**: Real-time workout display with progress tracking
-- **Configuration Files**: JSON-based configuration for custom workout setups
+- **Audio Recording**: Save entire workout audio to file (MP3, M4A, WAV)
+- **Command-Line Flags**: Full control via command-line arguments
 
 ## Project Structure
 
@@ -39,6 +69,7 @@ HeavyBagWorkout/
 │   ├── orthodox/           # Orthodox stance sprites
 │   └── southpaw/           # Southpaw stance sprites
 ├── configs/                # Preset configuration files
+├── screenshots/            # Application screenshots
 ├── docs/                   # Documentation
 │   ├── TIMER_ARCHITECTURE.md
 │   ├── ANIMATION_SYSTEM.md
@@ -75,24 +106,36 @@ cd HeavyBagWorkout
 
 2. Build the application:
 ```bash
+# Build CLI version
 go build -o heavybagworkout ./cmd/heavybagworkout
+
+# Or build GUI version
+go build -o heavybagworkout-gui ./cmd/heavybagworkout-gui
 ```
 
 3. Run the application:
 ```bash
+# Run CLI version
 ./heavybagworkout
-```
 
-Or run directly with Go:
-```bash
-go run ./cmd/heavybagworkout
+# Run GUI version
+./heavybagworkout --gui
+
+# Or run directly with Go
+go run ./cmd/heavybagworkout          # CLI
+go run ./cmd/heavybagworkout --gui    # GUI
 ```
 
 ## Usage
 
 ### Quick Start
 
-Start with a preset configuration:
+**GUI Mode** (Recommended for visual experience):
+```bash
+./heavybagworkout --gui
+```
+
+**CLI Mode** (Recommended for terminal-based workouts):
 ```bash
 ./heavybagworkout --preset beta_style
 ```
@@ -349,83 +392,63 @@ Configuration files are JSON format. Example structure:
 
 ## Interactive Controls
 
-During a workout:
-
+### CLI Controls
 - **Ctrl+C**: Cancel the workout at any time
 - **Enter**: View workout preview before starting
 
-Note: Pause/resume functionality will be available in the future GUI version.
+### GUI Controls
+- **Start Button**: Begin the workout
+- **Pause/Resume Button**: Pause and resume during workout
+- **Stop Button**: Stop the workout and return to configuration
+- **Preview Button**: View all combos before starting
 
-## GUI Usage
+## Choosing Between GUI and CLI
 
-The application includes a graphical user interface (GUI) built with Gio UI. The GUI provides a visual workout experience with animated character sprites.
+The application offers two interfaces, each optimized for different use cases:
 
-### Starting the GUI
+### GUI Mode (`--gui`)
 
-To start the GUI application, use the `--gui` flag:
+**Best for:**
+- Visual learners who want to see moves demonstrated
+- Interactive workouts with animated character sprites
+- Form-based configuration (no command-line knowledge needed)
+- Real-time visual feedback and progress tracking
+- Following along with animated combos
 
-```bash
-./heavybagworkout --gui
-```
+**Key Features:**
+- Animated character sprites performing boxing moves
+- Form-based configuration interface
+- Visual "Go!" indicators and progress bars
+- Pause/Resume controls
+- Workout preview before starting
 
-Or build and run the GUI directly:
+### CLI Mode (default)
 
-```bash
-go run ./cmd/heavybagworkout --gui
-```
+**Best for:**
+- Terminal-based workflows
+- Audio recording to files (`--save` flag)
+- Headless server environments
+- Scriptable/automated workout generation
+- Quick command-line configuration
 
-### GUI Features
+**Key Features:**
+- Real-time terminal display with progress tracking
+- Audio recording to MP3/M4A/WAV files
+- Full command-line flag support
+- Lightweight and fast startup
+- Perfect for automation
 
-- **Visual Workout Display**: See your workout progress with animated character sprites
-- **Form-Based Configuration**: Easy-to-use form interface for setting workout parameters
-- **Real-Time Animation**: Watch Scrappy Doo perform the combos in real-time
-- **Tempo-Based Animations**: Animations sync with your selected tempo
-- **Pause/Resume**: Pause and resume your workout at any time
-- **Workout Preview**: Preview all combos before starting the workout
-- **Configuration Management**: Save and load workout configurations
+### Quick Comparison
 
-### GUI Workflow
-
-1. **Configure Workout**: Fill out the form with your desired workout parameters
-2. **Preview Workout**: Review the generated workout and combos
-3. **Start Workout**: Begin the workout and watch the animations
-4. **Follow Along**: Perform the combos as Scrappy Doo demonstrates them
-5. **Complete**: View completion screen when workout finishes
-
-### GUI-Specific Features
-
-- **Animation System**: Character sprite animations for all punches and defensive moves
-- **Stance Support**: Visual animations adapt to your selected stance (orthodox/southpaw)
-- **Tempo Visualization**: Animations play at the tempo you select
-- **Visual Feedback**: "Go!" indicator appears when it's time to perform a combo
-- **Progress Tracking**: Visual progress bar and round counter
-
-### GUI Configuration
-
-All CLI flags are available in the GUI through the form interface:
-- Work duration, rest duration, total rounds
-- Workout pattern (linear, pyramid, random, constant)
-- Min/max moves per combo (with tempo-based limits)
-- Include defensive moves toggle
-- Stance selection (orthodox/southpaw)
-- Tempo selection (Slow, Medium, Fast, Superfast)
-- LLM generation toggle
-- OpenAI API key input
-- Preset selection
-
-### GUI vs CLI
-
-**Use CLI when:**
-- You prefer terminal-based interfaces
-- You want to save audio output to files
-- You're running on a headless server
-- You need scriptable/automated workflows
-
-**Use GUI when:**
-- You want visual feedback and animations
-- You prefer form-based configuration
-- You want to see the character performing combos
-- You're using the app interactively
+| Feature | GUI | CLI |
+|---------|-----|-----|
+| Visual Animations | ✅ Yes | ❌ No |
+| Audio Recording | ❌ No | ✅ Yes |
+| Form Interface | ✅ Yes | ❌ No |
+| Command-Line Flags | ✅ Yes (via form) | ✅ Yes |
+| Pause/Resume | ✅ Yes | ❌ No |
+| Headless Support | ❌ No | ✅ Yes |
+| File Output | ❌ No | ✅ Yes |
 
 ## Development Status
 

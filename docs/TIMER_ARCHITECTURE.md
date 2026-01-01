@@ -6,6 +6,42 @@ This document describes the timer system architecture and how it's used in both 
 
 The timer system consists of several components that work together to manage workout timing, period transitions, and synchronization with audio cues and visual displays.
 
+### Timer Component Dependency Graph
+
+```mermaid
+graph TB
+    CountdownTimer[CountdownTimer<br/>Base Timer]
+    WorkPeriodTimer[WorkPeriodTimer<br/>Work Period Timer]
+    RestPeriodTimer[RestPeriodTimer<br/>Rest Period Timer]
+    WorkoutTimer[WorkoutTimer<br/>Main Orchestrator]
+    WorkoutDisplay[WorkoutDisplay<br/>CLI Display Handler]
+    GUIApp[App<br/>GUI Display Handler]
+    AudioHandler[AudioCueHandler<br/>Audio Interface]
+    
+    CountdownTimer -->|extends| WorkPeriodTimer
+    CountdownTimer -->|extends| RestPeriodTimer
+    WorkPeriodTimer -->|embedded in| WorkoutTimer
+    RestPeriodTimer -->|embedded in| WorkoutTimer
+    
+    WorkoutTimer -->|uses| AudioHandler
+    WorkoutTimer -->|calls| WorkoutDisplay
+    WorkoutTimer -->|calls| GUIApp
+    
+    WorkoutDisplay -->|implements| TimerDisplayHandler
+    GUIApp -->|implements| TimerDisplayHandler
+    
+    WorkoutDisplay -->|manages| ComboTicker[Combo Ticker<br/>time.Ticker]
+    
+    style CountdownTimer fill:#e1f5ff
+    style WorkPeriodTimer fill:#b3e5fc
+    style RestPeriodTimer fill:#b3e5fc
+    style WorkoutTimer fill:#4fc3f7
+    style WorkoutDisplay fill:#81c784
+    style GUIApp fill:#81c784
+    style AudioHandler fill:#ffb74d
+    style ComboTicker fill:#fff9c4
+```
+
 ## Core Timer Components
 
 ### 1. CountdownTimer (`internal/timer/countdown_timer.go`)
@@ -142,12 +178,31 @@ The combo ticker is **not initialized** when `WorkoutDisplay` is created. Instea
    - Sets both fields back to `nil`
 
 **Key Flow:**
-1. `WorkoutTimer.Start()` begins the workout
-2. Timer calls `OnPeriodStart(Work)` → `WorkoutDisplay.startComboUpdates()` creates and starts the ticker
-3. Ticker goroutine plays beeps at tempo intervals (5s, 4s, 3s, or 1s)
-4. Timer calls `OnTimerUpdate()` every second → CLI updates countdown display
-5. Timer calls `OnPeriodEnd(Work)` → `WorkoutDisplay.stopComboUpdates()` stops and cleans up the ticker
-6. Timer automatically transitions to next period
+
+```mermaid
+sequenceDiagram
+    participant WT as WorkoutTimer
+    participant WD as WorkoutDisplay
+    participant CT as Combo Ticker
+    participant AH as AudioHandler
+    
+    WT->>WT: Start()
+    WT->>AH: PlayRoundCallout()
+    WT->>AH: PlayComboCallout()
+    WT->>WD: OnPeriodStart(Work)
+    WD->>CT: startComboUpdates()
+    CT->>AH: PlayBeep() (immediate)
+    loop Every tempo interval
+        CT->>AH: PlayBeep()
+    end
+    loop Every 1 second
+        WT->>WD: OnTimerUpdate()
+        WD->>WD: Update countdown display
+    end
+    WT->>WD: OnPeriodEnd(Work)
+    WD->>CT: stopComboUpdates()
+    WT->>WT: Transition to rest period
+```
 
 **Code Example:**
 
@@ -234,15 +289,37 @@ The GUI uses timers for the same reasons as CLI, plus additional requirements:
 - Animation timers are stopped/started based on workout state
 
 **Key Flow:**
-1. `WorkoutTimer.Start()` begins the workout
-2. Timer calls `OnPeriodStart()` → GUI stores period start time and duration
-3. GUI's `startAnimationSequence()` is called → starts first combo animation
-4. Each move gets a timer → animation updates at precise intervals
-5. After combo completes → idle animation timer runs until next beep
-6. Next beep triggers → `startAnimationSequence()` again
-7. At start of each sequence → GUI checks if work period has elapsed
-8. If period elapsed → GUI transitions to rest period animation
-9. Timer calls `OnPeriodEnd()` → GUI stops animation sequence
+
+```mermaid
+sequenceDiagram
+    participant WT as WorkoutTimer
+    participant GA as GUI App
+    participant AS as Animation Sequence
+    participant CS as CharacterSprite
+    participant AH as AudioHandler
+    
+    WT->>WT: Start()
+    WT->>AH: PlayRoundCallout()
+    WT->>AH: PlayComboCallout()
+    WT->>GA: OnPeriodStart(Work)
+    GA->>GA: Store workoutStartTime<br/>and workoutPeriodDuration
+    GA->>AS: startAnimationSequence()
+    AS->>AH: PlayBeep()
+    AS->>CS: SetAnimation(move1)
+    AS->>AS: Start timer (400ms)
+    AS->>CS: SetAnimation(move2)
+    AS->>AS: Start timer (400ms)
+    AS->>CS: SetAnimation(idle)
+    AS->>AS: Start idle timer
+    AS->>GA: Check: period elapsed?
+    alt Period not elapsed
+        AS->>AS: startAnimationSequence() (next beep)
+    else Period elapsed
+        GA->>GA: Transition to rest period
+    end
+    WT->>GA: OnPeriodEnd(Work)
+    GA->>AS: stopAnimationSequence()
+```
 
 ## Why Not Use Timers for CLI Beeps?
 
@@ -271,26 +348,45 @@ The `WorkoutTimer` and the combo ticker serve **different but complementary purp
 
 ### How They Work Together
 
-1. **Work Period Start**: 
-   - `WorkoutTimer` calls `OnPeriodStart(Work)` → CLI starts combo ticker
-   - Combo ticker plays first beep immediately
-   - `WorkoutTimer` starts work period countdown (20 seconds, for example)
-   - Combo ticker continues playing beeps every 5 seconds (for Slow tempo)
-   - `WorkoutTimer` provides 1-second updates for countdown display
-
-2. **Work Period End**:
-   - `WorkoutTimer` reaches zero → calls `OnPeriodEnd(Work)`
-   - CLI stops combo ticker (no more beeps)
-   - `WorkoutTimer` transitions to rest period
-
-3. **Rest Period**:
-   - `WorkoutTimer` manages rest period countdown
-   - `WorkoutTimer` plays countdown beeps in last 3 seconds (synchronized with timer ticks)
-   - No combo ticker (not needed during rest)
-
-4. **Next Round**:
-   - `WorkoutTimer` automatically starts next work period
-   - Cycle repeats
+```mermaid
+stateDiagram-v2
+    [*] --> WorkPeriodStart: WorkoutTimer.Start()
+    
+    WorkPeriodStart: Work Period Start
+    WorkPeriodStart: WorkoutTimer calls OnPeriodStart(Work)
+    WorkPeriodStart: Combo Ticker starts
+    WorkPeriodStart: First beep plays immediately
+    
+    WorkPeriodStart --> WorkPeriodActive: Timer starts countdown
+    
+    WorkPeriodActive: Work Period Active
+    WorkPeriodActive: WorkoutTimer: 1-second ticks
+    WorkPeriodActive: Combo Ticker: tempo beeps (5s/4s/3s/1s)
+    WorkPeriodActive: Display updates every second
+    
+    WorkPeriodActive --> WorkPeriodEnd: Timer reaches zero
+    
+    WorkPeriodEnd: Work Period End
+    WorkPeriodEnd: WorkoutTimer calls OnPeriodEnd(Work)
+    WorkPeriodEnd: Combo Ticker stops
+    
+    WorkPeriodEnd --> RestPeriodStart: Transition to rest
+    
+    RestPeriodStart: Rest Period Start
+    RestPeriodStart: WorkoutTimer manages countdown
+    RestPeriodStart: No combo ticker
+    
+    RestPeriodStart --> RestPeriodActive: Timer starts
+    
+    RestPeriodActive: Rest Period Active
+    RestPeriodActive: WorkoutTimer: 1-second ticks
+    RestPeriodActive: Last 3 seconds: countdown beeps
+    
+    RestPeriodActive --> RestPeriodEnd: Timer reaches zero
+    
+    RestPeriodEnd --> WorkPeriodStart: Next round starts
+    RestPeriodEnd --> [*]: All rounds complete
+```
 
 ### Why Not Just Use WorkoutTimer for Everything?
 
@@ -323,10 +419,16 @@ If we tried to use only `WorkoutTimer` for combo beeps, we would face these chal
 
 ### State Transitions
 
-```
-Idle → Running → Paused → Running → Completed
-  ↑                                    ↓
-  └────────────────────────────────────┘
+```mermaid
+stateDiagram-v2
+    [*] --> Idle
+    Idle --> Running: Start()
+    Running --> Paused: Pause()
+    Paused --> Running: Resume()
+    Running --> Completed: Timer reaches zero
+    Completed --> [*]
+    Running --> Idle: Stop()
+    Paused --> Idle: Stop()
 ```
 
 ### Thread Safety

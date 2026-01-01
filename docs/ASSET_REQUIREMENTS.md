@@ -6,24 +6,38 @@ This document describes the asset requirements for the animation system, includi
 
 Assets are organized by stance in the `assets/` directory:
 
-```
-assets/
-├── orthodox/
-│   ├── idle.jpg
-│   ├── jab.jpg
-│   ├── cross.jpg
-│   ├── left_hook.jpg
-│   ├── right_hook.jpg
-│   ├── left_uppercut.jpg
-│   ├── right_uppercut.jpg
-│   ├── left_slip.jpg
-│   ├── right_slip.jpg
-│   ├── left_roll.jpg
-│   ├── right_roll.jpg
-│   ├── pull_back.jpg
-│   └── duck.jpg
-└── southpaw/
-    └── (same file structure)
+```mermaid
+graph TB
+    Assets[assets/] --> Orthodox[orthodox/]
+    Assets --> Southpaw[southpaw/]
+    
+    Orthodox --> OIdle[idle.jpg]
+    Orthodox --> OPunches[Punches]
+    Orthodox --> ODefensive[Defensive Moves]
+    
+    OPunches --> OJab[jab.jpg]
+    OPunches --> OCross[cross.jpg]
+    OPunches --> OLH[left_hook.jpg]
+    OPunches --> ORH[right_hook.jpg]
+    OPunches --> OLU[left_uppercut.jpg]
+    OPunches --> ORU[right_uppercut.jpg]
+    
+    ODefensive --> OLS[left_slip.jpg]
+    ODefensive --> ORS[right_slip.jpg]
+    ODefensive --> OLR[left_roll.jpg]
+    ODefensive --> ORR[right_roll.jpg]
+    ODefensive --> OPB[pull_back.jpg]
+    ODefensive --> ODuck[duck.jpg]
+    
+    Southpaw --> SIdle[idle.jpg]
+    Southpaw --> SPunches[Same punch files]
+    Southpaw --> SDefensive[Same defensive files]
+    
+    style Assets fill:#4fc3f7
+    style Orthodox fill:#81c784
+    style Southpaw fill:#ffb74d
+    style OPunches fill:#e1f5ff
+    style ODefensive fill:#fff9c4
 ```
 
 ## File Naming Conventions
@@ -121,9 +135,38 @@ For southpaw (left-handed) boxers:
 
 ### Loading Process
 
-1. **Primary Attempt**: Load `.jpg` file from stance-specific directory
-2. **Fallback**: If JPG not found, try `.png` file
-3. **Error Handling**: If both fail, use placeholder frame or fallback to jab pose
+```mermaid
+flowchart TD
+    Start[Request Asset] --> CheckStance{Stance?}
+    CheckStance -->|Orthodox| OrthodoxPath[assets/orthodox/]
+    CheckStance -->|Southpaw| SouthpawPath[assets/southpaw/]
+    
+    OrthodoxPath --> TryJPG[Try .jpg file]
+    SouthpawPath --> TryJPG
+    
+    TryJPG --> JPGExists{File exists?}
+    JPGExists -->|Yes| LoadJPG[Load JPG Image]
+    JPGExists -->|No| TryPNG[Try .png file]
+    
+    TryPNG --> PNGExists{File exists?}
+    PNGExists -->|Yes| LoadPNG[Load PNG Image]
+    PNGExists -->|No| CheckType{Asset Type?}
+    
+    CheckType -->|Idle| FallbackJab[Fallback to jab pose]
+    CheckType -->|Move| Placeholder[Use placeholder frame]
+    
+    LoadJPG --> Success[Asset Loaded]
+    LoadPNG --> Success
+    FallbackJab --> Success
+    Placeholder --> Success
+    
+    style Start fill:#e1f5ff
+    style TryJPG fill:#b3e5fc
+    style TryPNG fill:#fff9c4
+    style Success fill:#c8e6c9
+    style Placeholder fill:#ffccbc
+    style FallbackJab fill:#ffccbc
+```
 
 ### Error Handling
 

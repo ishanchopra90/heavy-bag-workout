@@ -14,6 +14,32 @@ The LLM workout generator uses OpenAI's API to generate complete workouts based 
 
 ## Architecture
 
+### Component Diagram
+
+```mermaid
+graph TB
+    Generator[LLMWorkoutGenerator<br/>Main Orchestrator]
+    Client[OpenAIClient<br/>API Communication]
+    MoveMapping[MoveMapping<br/>Stance Descriptions]
+    Validator[Validation System<br/>Round/Move Validation]
+    OpenAI[OpenAI API<br/>GPT Models]
+    
+    Generator -->|uses| Client
+    Generator -->|uses| MoveMapping
+    Generator -->|uses| Validator
+    Client -->|HTTP requests| OpenAI
+    OpenAI -->|JSON response| Client
+    Client -->|parsed response| Generator
+    Generator -->|validates| Validator
+    Validator -->|error feedback| Generator
+    
+    style Generator fill:#4fc3f7
+    style Client fill:#81c784
+    style MoveMapping fill:#ffb74d
+    style Validator fill:#ef5350
+    style OpenAI fill:#ba68c8
+```
+
 ### Components
 
 **LLMWorkoutGenerator** (`internal/generator/llm_workout_generator.go`):
@@ -117,44 +143,32 @@ Each pattern type has detailed instructions:
 
 The LLM generator uses a sophisticated **feedback loop** to improve generation quality:
 
-```
-┌─────────────────────────────────────────────────────────┐
-│ 1. Generate Initial Prompt                              │
-│    - Based on config, pattern, stance                   │
-└──────────────────┬──────────────────────────────────────┘
-                   │
-                   ▼
-┌─────────────────────────────────────────────────────────┐
-│ 2. First Attempt                                         │
-│    - Send prompt to OpenAI API                          │
-│    - Parse JSON response                                │
-│    - Validate workout                                   │
-└──────────────────┬──────────────────────────────────────┘
-                   │
-         ┌─────────┴─────────┐
-         │                    │
-    Success?              Failure?
-         │                    │
-         │                    ▼
-         │         ┌──────────────────────────────┐
-         │         │ 3. Build Retry Prompt        │
-         │         │    - Include error message   │
-         │         │    - Add specific guidance  │
-         │         │    - Emphasize what went     │
-         │         │      wrong                  │
-         │         └──────────┬───────────────────┘
-         │                    │
-         │                    ▼
-         │         ┌──────────────────────────────┐
-         │         │ 4. Retry Attempt             │
-         │         │    - Send enhanced prompt    │
-         │         │    - Parse and validate      │
-         │         └──────────┬───────────────────┘
-         │                    │
-         └────────────────────┘
-                   │
-                   ▼
-         Return workout or error
+```mermaid
+flowchart TD
+    Start[Start Generation] --> BuildPrompt[Build Initial Prompt<br/>config, pattern, stance]
+    BuildPrompt --> FirstAttempt[First Attempt]
+    FirstAttempt --> SendAPI[Send to OpenAI API]
+    SendAPI --> Parse[Parse JSON Response]
+    Parse --> Validate[Validate Workout]
+    Validate --> Check{Validation<br/>Passed?}
+    Check -->|Yes| Success[Return Workout]
+    Check -->|No| BuildRetry[Build Retry Prompt]
+    BuildRetry --> AddError[Include Error Message]
+    AddError --> AddGuidance[Add Specific Guidance<br/>based on error type]
+    AddGuidance --> RetryAttempt[Retry Attempt]
+    RetryAttempt --> SendAPI2[Send Enhanced Prompt<br/>to OpenAI API]
+    SendAPI2 --> Parse2[Parse JSON Response]
+    Parse2 --> Validate2[Validate Workout]
+    Validate2 --> Check2{Validation<br/>Passed?}
+    Check2 -->|Yes| Success
+    Check2 -->|No| Error[Return Error<br/>with both attempts]
+    
+    style Start fill:#e1f5ff
+    style FirstAttempt fill:#b3e5fc
+    style BuildRetry fill:#fff9c4
+    style RetryAttempt fill:#ffccbc
+    style Success fill:#c8e6c9
+    style Error fill:#ffcdd2
 ```
 
 ### Retry Prompt Enhancement
@@ -225,44 +239,43 @@ This ensures that even if the LLM returns rounds out of order, they are processe
 
 ### Successful Generation
 
-```
-User Config: 3 rounds, Linear pattern, 2-4 moves, Orthodox stance
-
-1. Prompt Generated:
-   - Includes move mappings for Orthodox stance
-   - Specifies 3 rounds required
-   - Provides round-by-round targets (Round 1: 2 moves, Round 2: 3 moves, Round 3: 4 moves)
-   - Includes linear pattern rules
-
-2. First Attempt:
-   - LLM generates workout with 3 rounds
-   - Validation passes
-   - Workout returned to user
+```mermaid
+sequenceDiagram
+    participant User
+    participant Generator
+    participant OpenAI
+    participant Validator
+    
+    User->>Generator: GenerateWorkout(config)
+    Generator->>Generator: Build Prompt
+    Generator->>OpenAI: API Request (Prompt)
+    OpenAI->>Generator: JSON Response (3 rounds)
+    Generator->>Validator: Validate rounds, moves, pattern
+    Validator->>Generator: ✓ Validation Passed
+    Generator->>User: Return Workout
 ```
 
 ### Generation with Retry
 
-```
-User Config: 1 round, Linear pattern, 2-4 moves, Orthodox stance
-
-1. Prompt Generated:
-   - Specifies 1 round required
-   - CRITICAL: "You MUST generate EXACTLY 1 rounds"
-
-2. First Attempt:
-   - LLM generates workout with 3 rounds (ignored instruction)
-   - Validation fails: "workout has 3 rounds, but configuration specifies 1 rounds"
-   
-3. Retry Prompt Generated:
-   - Error header: "PREVIOUS ATTEMPT FAILED"
-   - Error message included
-   - Specific guidance: "Generate EXACTLY 1 rounds, no more and no less"
-   - Original prompt preserved
-   
-4. Retry Attempt:
-   - LLM generates workout with 1 round
-   - Validation passes
-   - Workout returned to user
+```mermaid
+sequenceDiagram
+    participant User
+    participant Generator
+    participant OpenAI
+    participant Validator
+    
+    User->>Generator: GenerateWorkout(config: 1 round)
+    Generator->>Generator: Build Prompt ("EXACTLY 1 round")
+    Generator->>OpenAI: API Request (Initial Prompt)
+    OpenAI->>Generator: JSON Response (3 rounds ❌)
+    Generator->>Validator: Validate
+    Validator->>Generator: ✗ Error: "3 rounds, expected 1"
+    Generator->>Generator: Build Retry Prompt<br/>(Error + Guidance)
+    Generator->>OpenAI: API Request (Retry Prompt)
+    OpenAI->>Generator: JSON Response (1 round ✓)
+    Generator->>Validator: Validate
+    Validator->>Generator: ✓ Validation Passed
+    Generator->>User: Return Workout
 ```
 
 ## Benefits of Feedback Mechanism

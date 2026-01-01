@@ -1,0 +1,910 @@
+=== RUN   TestPresetLoadsCorrectValues
+=== RUN   TestPresetLoadsCorrectValues/power_preset
+=== RUN   TestPresetLoadsCorrectValues/beta_style_preset
+=== RUN   TestPresetLoadsCorrectValues/endurance_preset
+--- PASS: TestPresetLoadsCorrectValues (0.00s)
+    --- PASS: TestPresetLoadsCorrectValues/power_preset (0.00s)
+    --- PASS: TestPresetLoadsCorrectValues/beta_style_preset (0.00s)
+    --- PASS: TestPresetLoadsCorrectValues/endurance_preset (0.00s)
+=== RUN   TestFlagOverridesPreset
+=== RUN   TestFlagOverridesPreset/all_flags_override_power_preset
+=== RUN   TestFlagOverridesPreset/rest_duration_flag_overrides_preset_when_set
+=== RUN   TestFlagOverridesPreset/zero_rest_duration_flag_does_not_override_preset
+=== RUN   TestFlagOverridesPreset/zero_work_duration_flag_does_not_override_preset
+--- PASS: TestFlagOverridesPreset (0.00s)
+    --- PASS: TestFlagOverridesPreset/all_flags_override_power_preset (0.00s)
+    --- PASS: TestFlagOverridesPreset/rest_duration_flag_overrides_preset_when_set (0.00s)
+    --- PASS: TestFlagOverridesPreset/zero_rest_duration_flag_does_not_override_preset (0.00s)
+    --- PASS: TestFlagOverridesPreset/zero_work_duration_flag_does_not_override_preset (0.00s)
+=== RUN   TestPatternFlagOverrides
+=== RUN   TestPatternFlagOverrides/pattern_type_override
+=== RUN   TestPatternFlagOverrides/invalid_pattern_type
+=== RUN   TestPatternFlagOverrides/pattern_type_case_insensitive
+=== RUN   TestPatternFlagOverrides/min_moves_override
+=== RUN   TestPatternFlagOverrides/max_moves_override
+=== RUN   TestPatternFlagOverrides/include_defensive_enable
+=== RUN   TestPatternFlagOverrides/no_include_defensive_disable
+=== RUN   TestPatternFlagOverrides/no_include_defensive_takes_priority
+=== RUN   TestPatternFlagOverrides/zero_min_moves_does_not_override
+=== RUN   TestPatternFlagOverrides/zero_max_moves_does_not_override
+--- PASS: TestPatternFlagOverrides (0.00s)
+    --- PASS: TestPatternFlagOverrides/pattern_type_override (0.00s)
+    --- PASS: TestPatternFlagOverrides/invalid_pattern_type (0.00s)
+    --- PASS: TestPatternFlagOverrides/pattern_type_case_insensitive (0.00s)
+    --- PASS: TestPatternFlagOverrides/min_moves_override (0.00s)
+    --- PASS: TestPatternFlagOverrides/max_moves_override (0.00s)
+    --- PASS: TestPatternFlagOverrides/include_defensive_enable (0.00s)
+    --- PASS: TestPatternFlagOverrides/no_include_defensive_disable (0.00s)
+    --- PASS: TestPatternFlagOverrides/no_include_defensive_takes_priority (0.00s)
+    --- PASS: TestPatternFlagOverrides/zero_min_moves_does_not_override (0.00s)
+    --- PASS: TestPatternFlagOverrides/zero_max_moves_does_not_override (0.00s)
+=== RUN   TestPatternTypeValidation
+=== RUN   TestPatternTypeValidation/linear
+=== RUN   TestPatternTypeValidation/LINEAR
+=== RUN   TestPatternTypeValidation/Linear
+=== RUN   TestPatternTypeValidation/pyramid
+=== RUN   TestPatternTypeValidation/random
+=== RUN   TestPatternTypeValidation/constant
+=== RUN   TestPatternTypeValidation/__linear__
+=== RUN   TestPatternTypeValidation/invalid
+=== RUN   TestPatternTypeValidation/#00
+--- PASS: TestPatternTypeValidation (0.00s)
+    --- PASS: TestPatternTypeValidation/linear (0.00s)
+    --- PASS: TestPatternTypeValidation/LINEAR (0.00s)
+    --- PASS: TestPatternTypeValidation/Linear (0.00s)
+    --- PASS: TestPatternTypeValidation/pyramid (0.00s)
+    --- PASS: TestPatternTypeValidation/random (0.00s)
+    --- PASS: TestPatternTypeValidation/constant (0.00s)
+    --- PASS: TestPatternTypeValidation/__linear__ (0.00s)
+    --- PASS: TestPatternTypeValidation/invalid (0.00s)
+    --- PASS: TestPatternTypeValidation/#00 (0.00s)
+=== RUN   TestStanceFlagOverridesPreset
+--- PASS: TestStanceFlagOverridesPreset (0.00s)
+=== RUN   TestStanceFlagUsesConfigWhenNotProvided
+--- PASS: TestStanceFlagUsesConfigWhenNotProvided (0.00s)
+=== RUN   TestTempoFlag
+=== RUN   TestTempoFlag/slow_tempo
+=== RUN   TestTempoFlag/medium_tempo
+=== RUN   TestTempoFlag/fast_tempo
+=== RUN   TestTempoFlag/superfast_tempo
+=== RUN   TestTempoFlag/empty_tempo_defaults_to_slow
+=== RUN   TestTempoFlag/invalid_tempo
+=== RUN   TestTempoFlag/case_insensitive_tempo
+--- PASS: TestTempoFlag (0.00s)
+    --- PASS: TestTempoFlag/slow_tempo (0.00s)
+    --- PASS: TestTempoFlag/medium_tempo (0.00s)
+    --- PASS: TestTempoFlag/fast_tempo (0.00s)
+    --- PASS: TestTempoFlag/superfast_tempo (0.00s)
+    --- PASS: TestTempoFlag/empty_tempo_defaults_to_slow (0.00s)
+    --- PASS: TestTempoFlag/invalid_tempo (0.00s)
+    --- PASS: TestTempoFlag/case_insensitive_tempo (0.00s)
+PASS
+ok  	heavybagworkout/cmd/heavybagworkout	0.805s
+?   	heavybagworkout/cmd/heavybagworkout-gui	[no test files]
+=== RUN   TestNewWorkoutDisplay
+--- PASS: TestNewWorkoutDisplay (0.00s)
+=== RUN   TestNewWorkoutDisplayWithStance
+--- PASS: TestNewWorkoutDisplayWithStance (0.00s)
+=== RUN   TestWorkoutDisplay_SetStance
+--- PASS: TestWorkoutDisplay_SetStance (0.00s)
+=== RUN   TestWorkoutDisplay_OnWorkoutStart
+[2J[H╔════════════════════════════════════════════════════════════╗
+║         🐶 Puppy Power - Heavy Bag Workout 🐶             ║
+╚════════════════════════════════════════════════════════════╝
+
+Use Ctrl+C to cancel workout
+
+──────────────────────────────────────────────────────────────
+
+--- PASS: TestWorkoutDisplay_OnWorkoutStart (0.00s)
+=== RUN   TestWorkoutDisplay_OnPeriodStart
+🔥 ROUND 1 - WORK PERIOD 🔥
+
+💤 ROUND 1 - REST PERIOD 💤
+
+--- PASS: TestWorkoutDisplay_OnPeriodStart (0.10s)
+=== RUN   TestWorkoutDisplay_OnTimerUpdate
+[s[8;1H[J
+═══════════════════════════════════════════════════════════════
+                      ROUND 1 of 0
+═══════════════════════════════════════════════════════════════
+
+Progress: [░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] 0% (0/0 rounds completed)
+🔥 WORK
+┌─────────────────┐
+│  ⏱  00:15  │
+└─────────────────┘
+   (15 seconds remaining)
+
+[u--- PASS: TestWorkoutDisplay_OnTimerUpdate (0.00s)
+=== RUN   TestWorkoutDisplay_SetPaused
+--- PASS: TestWorkoutDisplay_SetPaused (0.05s)
+=== RUN   TestWorkoutDisplay_printRoundNumber
+--- PASS: TestWorkoutDisplay_printRoundNumber (0.00s)
+=== RUN   TestWorkoutDisplay_printProgress
+--- PASS: TestWorkoutDisplay_printProgress (0.00s)
+=== RUN   TestWorkoutDisplay_printTimer
+--- PASS: TestWorkoutDisplay_printTimer (0.00s)
+=== RUN   TestWorkoutDisplay_printCurrentCombo
+--- PASS: TestWorkoutDisplay_printCurrentCombo (0.00s)
+=== RUN   TestWorkoutDisplay_printCurrentCombo_PunchNames
+--- PASS: TestWorkoutDisplay_printCurrentCombo_PunchNames (0.00s)
+=== RUN   TestWorkoutDisplay_printCurrentCombo_EmptyCombo
+--- PASS: TestWorkoutDisplay_printCurrentCombo_EmptyCombo (0.00s)
+=== RUN   TestWorkoutDisplay_startComboUpdates
+--- PASS: TestWorkoutDisplay_startComboUpdates (0.10s)
+=== RUN   TestWorkoutDisplay_stopComboUpdates
+--- PASS: TestWorkoutDisplay_stopComboUpdates (0.05s)
+=== RUN   TestWorkoutDisplay_TempoControlsBeepInterval
+=== RUN   TestWorkoutDisplay_TempoControlsBeepInterval/slow_tempo_(5_seconds)
+[s[8;1H[J
+═══════════════════════════════════════════════════════════════
+                      ROUND 1 of 1
+═══════════════════════════════════════════════════════════════
+
+Progress: [░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] 0% (0/1 rounds completed)
+🔥 WORK
+┌─────────────────┐
+│  ⏱  00:00  │
+└─────────────────┘
+
+  🥊 COMBO:
+     jab
+
+[u=== RUN   TestWorkoutDisplay_TempoControlsBeepInterval/medium_tempo_(4_seconds)
+[s[8;1H[J
+═══════════════════════════════════════════════════════════════
+                      ROUND 1 of 1
+═══════════════════════════════════════════════════════════════
+
+Progress: [░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] 0% (0/1 rounds completed)
+🔥 WORK
+┌─────────────────┐
+│  ⏱  00:00  │
+└─────────────────┘
+
+  🥊 COMBO:
+     jab
+
+[u=== RUN   TestWorkoutDisplay_TempoControlsBeepInterval/fast_tempo_(3_seconds)
+[s[8;1H[J
+═══════════════════════════════════════════════════════════════
+                      ROUND 1 of 1
+═══════════════════════════════════════════════════════════════
+
+Progress: [░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] 0% (0/1 rounds completed)
+🔥 WORK
+┌─────────────────┐
+│  ⏱  00:00  │
+└─────────────────┘
+
+  🥊 COMBO:
+     jab
+
+[u[s[8;1H[J
+═══════════════════════════════════════════════════════════════
+                      ROUND 1 of 1
+═══════════════════════════════════════════════════════════════
+
+Progress: [░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] 0% (0/1 rounds completed)
+🔥 WORK
+┌─────────────────┐
+│  ⏱  00:00  │
+└─────────────────┘
+
+  🥊 COMBO:
+     jab
+
+[u=== RUN   TestWorkoutDisplay_TempoControlsBeepInterval/superfast_tempo_(2_seconds)
+[s[8;1H[J
+═══════════════════════════════════════════════════════════════
+                      ROUND 1 of 1
+═══════════════════════════════════════════════════════════════
+
+Progress: [░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] 0% (0/1 rounds completed)
+🔥 WORK
+┌─────────────────┐
+│  ⏱  00:00  │
+└─────────────────┘
+
+  🥊 COMBO:
+     jab
+
+[u[s[8;1H[J
+═══════════════════════════════════════════════════════════════
+                      ROUND 1 of 1
+═══════════════════════════════════════════════════════════════
+
+Progress: [░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] 0% (0/1 rounds completed)
+🔥 WORK
+┌─────────────────┐
+│  ⏱  00:00  │
+└─────────────────┘
+
+  🥊 COMBO:
+     jab
+
+[u=== RUN   TestWorkoutDisplay_TempoControlsBeepInterval/default_tempo_(0_defaults_to_5_seconds)
+[s[8;1H[J
+═══════════════════════════════════════════════════════════════
+                      ROUND 1 of 1
+═══════════════════════════════════════════════════════════════
+
+Progress: [░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] 0% (0/1 rounds completed)
+🔥 WORK
+┌─────────────────┐
+│  ⏱  00:00  │
+└─────────────────┘
+
+  🥊 COMBO:
+     jab
+
+[u--- PASS: TestWorkoutDisplay_TempoControlsBeepInterval (28.01s)
+    --- PASS: TestWorkoutDisplay_TempoControlsBeepInterval/slow_tempo_(5_seconds) (5.60s)
+    --- PASS: TestWorkoutDisplay_TempoControlsBeepInterval/medium_tempo_(4_seconds) (4.60s)
+    --- PASS: TestWorkoutDisplay_TempoControlsBeepInterval/fast_tempo_(3_seconds) (7.10s)
+    --- PASS: TestWorkoutDisplay_TempoControlsBeepInterval/superfast_tempo_(2_seconds) (5.10s)
+    --- PASS: TestWorkoutDisplay_TempoControlsBeepInterval/default_tempo_(0_defaults_to_5_seconds) (5.60s)
+=== RUN   TestWorkoutDisplay_OnPeriodEnd
+--- PASS: TestWorkoutDisplay_OnPeriodEnd (0.15s)
+=== RUN   TestWorkoutDisplay_OnWorkoutComplete
+[2J[H╔════════════════════════════════════════════════════════════╗
+║         🐶 Puppy Power - Heavy Bag Workout 🐶             ║
+╚════════════════════════════════════════════════════════════╝
+
+
+  🎉 WORKOUT COMPLETE! 🎉
+
+  Completed 3 rounds
+
+  Great job! You did it! 💪
+
+--- PASS: TestWorkoutDisplay_OnWorkoutComplete (0.15s)
+=== RUN   TestWorkoutDisplay_printProgress_Calculation
+--- PASS: TestWorkoutDisplay_printProgress_Calculation (0.00s)
+=== RUN   TestWorkoutDisplay_ComboRemainsConstantPerRound
+🔥 ROUND 1 - WORK PERIOD 🔥
+
+[s[8;1H[J
+═══════════════════════════════════════════════════════════════
+                      ROUND 1 of 2
+═══════════════════════════════════════════════════════════════
+
+Progress: [░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] 0% (0/2 rounds completed)
+🔥 WORK
+┌─────────────────┐
+│  ⏱  00:20  │
+└─────────────────┘
+   (20 seconds remaining)
+
+  🥊 COMBO:
+     jab → cross
+
+[u[s[8;1H[J
+═══════════════════════════════════════════════════════════════
+                      ROUND 1 of 2
+═══════════════════════════════════════════════════════════════
+
+Progress: [░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] 0% (0/2 rounds completed)
+🔥 WORK
+┌─────────────────┐
+│  ⏱  00:20  │
+└─────────────────┘
+   (20 seconds remaining)
+
+  🥊 COMBO:
+     jab → cross
+
+[u[s[8;1H[J
+═══════════════════════════════════════════════════════════════
+                      ROUND 1 of 2
+═══════════════════════════════════════════════════════════════
+
+Progress: [░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] 0% (0/2 rounds completed)
+🔥 WORK
+┌─────────────────┐
+│  ⏱  00:20  │
+└─────────────────┘
+   (20 seconds remaining)
+
+  🥊 COMBO:
+     jab → cross
+
+[u[s[8;1H[J
+═══════════════════════════════════════════════════════════════
+                      ROUND 1 of 2
+═══════════════════════════════════════════════════════════════
+
+Progress: [░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] 0% (0/2 rounds completed)
+🔥 WORK
+┌─────────────────┐
+│  ⏱  00:20  │
+└─────────────────┘
+   (20 seconds remaining)
+
+  🥊 COMBO:
+     jab → cross
+
+[u[s[8;1H[J
+═══════════════════════════════════════════════════════════════
+                      ROUND 1 of 2
+═══════════════════════════════════════════════════════════════
+
+Progress: [░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] 0% (0/2 rounds completed)
+🔥 WORK
+┌─────────────────┐
+│  ⏱  00:20  │
+└─────────────────┘
+   (20 seconds remaining)
+
+  🥊 COMBO:
+     jab → cross
+
+[u🔥 ROUND 2 - WORK PERIOD 🔥
+
+[s[8;1H[J
+═══════════════════════════════════════════════════════════════
+                      ROUND 2 of 2
+═══════════════════════════════════════════════════════════════
+
+Progress: [█████████████████████████░░░░░░░░░░░░░░░░░░░░░░░░░] 50% (1/2 rounds completed)
+🔥 WORK
+┌─────────────────┐
+│  ⏱  00:20  │
+└─────────────────┘
+   (20 seconds remaining)
+
+  🥊 COMBO:
+     cross → left hook
+
+[u[s[8;1H[J
+═══════════════════════════════════════════════════════════════
+                      ROUND 2 of 2
+═══════════════════════════════════════════════════════════════
+
+Progress: [█████████████████████████░░░░░░░░░░░░░░░░░░░░░░░░░] 50% (1/2 rounds completed)
+🔥 WORK
+┌─────────────────┐
+│  ⏱  00:20  │
+└─────────────────┘
+   (20 seconds remaining)
+
+  🥊 COMBO:
+     cross → left hook
+
+[u[s[8;1H[J
+═══════════════════════════════════════════════════════════════
+                      ROUND 2 of 2
+═══════════════════════════════════════════════════════════════
+
+Progress: [█████████████████████████░░░░░░░░░░░░░░░░░░░░░░░░░] 50% (1/2 rounds completed)
+🔥 WORK
+┌─────────────────┐
+│  ⏱  00:20  │
+└─────────────────┘
+   (20 seconds remaining)
+
+  🥊 COMBO:
+     cross → left hook
+
+[u--- PASS: TestWorkoutDisplay_ComboRemainsConstantPerRound (0.20s)
+=== RUN   TestWorkoutDisplay_ComboConstantDuringTickerFires
+🔥 ROUND 1 - WORK PERIOD 🔥
+
+[s[8;1H[J
+═══════════════════════════════════════════════════════════════
+                      ROUND 1 of 1
+═══════════════════════════════════════════════════════════════
+
+Progress: [░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] 0% (0/1 rounds completed)
+🔥 WORK
+┌─────────────────┐
+│  ⏱  00:20  │
+└─────────────────┘
+   (20 seconds remaining)
+
+  🥊 COMBO:
+     jab → cross
+
+[u[s[8;1H[J
+═══════════════════════════════════════════════════════════════
+[s[8;1H[J
+═══════════════════════════════════════════════════════════════
+                      ROUND 1 of 1
+═══════════════════════════════════════════════════════════════
+
+Progress: [░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] 0% (0/1 rounds completed)
+🔥 WORK
+┌─────────────────┐
+│  ⏱  00:20  │
+└─────────────────┘
+   (20 seconds remaining)
+
+  🥊 COMBO:
+     jab → cross
+
+[u                      ROUND 1 of 1
+═══════════════════════════════════════════════════════════════
+
+Progress: [░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] 0% (0/1 rounds completed)
+🔥 WORK
+┌─────────────────┐
+│  ⏱  00:20  │
+└─────────────────┘
+   (20 seconds remaining)
+
+  🥊 COMBO:
+     jab → cross
+
+[u[s[8;1H[J
+═══════════════════════════════════════════════════════════════
+                      ROUND 1 of 1
+═══════════════════════════════════════════════════════════════
+
+Progress: [░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] 0% (0/1 rounds completed)
+🔥 WORK
+┌─────────────────┐
+│  ⏱  00:20  │
+└─────────────────┘
+   (20 seconds remaining)
+
+  🥊 COMBO:
+     jab → cross
+
+[u--- PASS: TestWorkoutDisplay_ComboConstantDuringTickerFires (7.60s)
+=== RUN   TestWorkoutDisplay_ComboIndexResetsOnNewRound
+🔥 ROUND 1 - WORK PERIOD 🔥
+
+💤 ROUND 1 - REST PERIOD 💤
+
+🔥 ROUND 2 - WORK PERIOD 🔥
+
+--- PASS: TestWorkoutDisplay_ComboIndexResetsOnNewRound (0.05s)
+=== RUN   TestWorkoutDisplay_ComboStringFormat
+--- PASS: TestWorkoutDisplay_ComboStringFormat (0.00s)
+=== RUN   TestNewWorkoutInterface
+--- PASS: TestNewWorkoutInterface (0.00s)
+=== RUN   TestNewWorkoutInterfaceWithStance
+--- PASS: TestNewWorkoutInterfaceWithStance (0.00s)
+=== RUN   TestWorkoutInterface_SetStance
+--- PASS: TestWorkoutInterface_SetStance (0.00s)
+=== RUN   TestWorkoutInterface_Pause
+--- PASS: TestWorkoutInterface_Pause (0.25s)
+=== RUN   TestWorkoutInterface_Resume
+--- PASS: TestWorkoutInterface_Resume (0.25s)
+=== RUN   TestWorkoutInterface_Stop
+--- PASS: TestWorkoutInterface_Stop (0.10s)
+=== RUN   TestWorkoutInterface_TogglePause
+--- PASS: TestWorkoutInterface_TogglePause (0.15s)
+=== RUN   TestWorkoutInterface_WorkoutTimerIntegration
+[2J[H╔════════════════════════════════════════════════════════════╗
+║         🐶 Puppy Power - Heavy Bag Workout 🐶             ║
+╚════════════════════════════════════════════════════════════╝
+
+Use Ctrl+C to cancel workout
+
+──────────────────────────────────────────────────────────────
+
+🔥 ROUND 1 - WORK PERIOD 🔥
+
+[s[8;1H[J
+═══════════════════════════════════════════════════════════════
+                      ROUND 1 of 2
+═══════════════════════════════════════════════════════════════
+
+Progress: [░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] 0% (0/2 rounds completed)
+🔥 WORK
+┌─────────────────┐
+│  ⏱  00:01  │
+└─────────────────┘
+   (1 seconds remaining)
+
+  🥊 COMBO:
+     (empty combo)
+
+[u[s[8;1H[J
+═══════════════════════════════════════════════════════════════
+                      ROUND 1 of 2
+═══════════════════════════════════════════════════════════════
+
+Progress: [░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] 0% (0/2 rounds completed)
+🔥 WORK
+┌─────────────────┐
+│  ⏱  00:00  │
+└─────────────────┘
+
+  🥊 COMBO:
+     (empty combo)
+
+[u💤 ROUND 1 - REST PERIOD 💤
+
+[s[8;1H[J
+═══════════════════════════════════════════════════════════════
+                      ROUND 1 of 2
+═══════════════════════════════════════════════════════════════
+
+Progress: [░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] 0% (0/2 rounds completed)
+💤 REST
+┌─────────────────┐
+│  ⏱  00:00  │
+└─────────────────┘
+
+
+  Rest and recover...
+
+[u[s[8;1H[J
+═══════════════════════════════════════════════════════════════
+                      ROUND 1 of 2
+═══════════════════════════════════════════════════════════════
+
+Progress: [░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] 0% (0/2 rounds completed)
+💤 REST
+┌─────────────────┐
+│  ⏱  00:00  │
+└─────────────────┘
+
+
+  Rest and recover...
+
+[u🔥 ROUND 2 - WORK PERIOD 🔥
+
+[s[8;1H[J
+═══════════════════════════════════════════════════════════════
+                      ROUND 2 of 2
+═══════════════════════════════════════════════════════════════
+
+Progress: [█████████████████████████░░░░░░░░░░░░░░░░░░░░░░░░░] 50% (1/2 rounds completed)
+🔥 WORK
+┌─────────────────┐
+│  ⏱  00:01  │
+└─────────────────┘
+   (1 seconds remaining)
+
+  🥊 COMBO:
+     (empty combo)
+
+[u[s[8;1H[J
+═══════════════════════════════════════════════════════════════
+                      ROUND 2 of 2
+═══════════════════════════════════════════════════════════════
+
+Progress: [█████████████████████████░░░░░░░░░░░░░░░░░░░░░░░░░] 50% (1/2 rounds completed)
+🔥 WORK
+┌─────────────────┐
+│  ⏱  00:00  │
+└─────────────────┘
+
+  🥊 COMBO:
+     (empty combo)
+
+[u💤 ROUND 2 - REST PERIOD 💤
+
+[s[8;1H[J
+═══════════════════════════════════════════════════════════════
+                      ROUND 2 of 2
+═══════════════════════════════════════════════════════════════
+
+Progress: [█████████████████████████░░░░░░░░░░░░░░░░░░░░░░░░░] 50% (1/2 rounds completed)
+💤 REST
+┌─────────────────┐
+│  ⏱  00:00  │
+└─────────────────┘
+
+
+  Rest and recover...
+
+[u[s[8;1H[J
+═══════════════════════════════════════════════════════════════
+                      ROUND 2 of 2
+═══════════════════════════════════════════════════════════════
+
+Progress: [█████████████████████████░░░░░░░░░░░░░░░░░░░░░░░░░] 50% (1/2 rounds completed)
+💤 REST
+┌─────────────────┐
+│  ⏱  00:00  │
+└─────────────────┘
+
+
+  Rest and recover...
+
+[u[2J[H╔════════════════════════════════════════════════════════════╗
+║         🐶 Puppy Power - Heavy Bag Workout 🐶             ║
+╚════════════════════════════════════════════════════════════╝
+
+
+  🎉 WORKOUT COMPLETE! 🎉
+
+  Completed 2 rounds
+
+  Great job! You did it! 💪
+
+--- PASS: TestWorkoutInterface_WorkoutTimerIntegration (4.04s)
+=== RUN   TestWorkoutInterface_DisplayHandlerIntegration
+[2J[H╔════════════════════════════════════════════════════════════╗
+║         🐶 Puppy Power - Heavy Bag Workout 🐶             ║
+╚════════════════════════════════════════════════════════════╝
+
+Use Ctrl+C to cancel workout
+
+──────────────────────────────────────────────────────────────
+
+🔥 ROUND 1 - WORK PERIOD 🔥
+
+[s[8;1H[J
+═══════════════════════════════════════════════════════════════
+                      ROUND 1 of 1
+═══════════════════════════════════════════════════════════════
+
+Progress: [░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] 0% (0/1 rounds completed)
+🔥 WORK
+┌─────────────────┐
+│  ⏱  00:01  │
+└─────────────────┘
+   (1 seconds remaining)
+
+  🥊 COMBO:
+     jab
+
+[u--- PASS: TestWorkoutInterface_DisplayHandlerIntegration (0.20s)
+=== RUN   TestWorkoutInterface_AudioHandlerIntegration
+--- PASS: TestWorkoutInterface_AudioHandlerIntegration (0.00s)
+=== RUN   TestWorkoutInterface_CurrentRoundAndPeriod
+--- PASS: TestWorkoutInterface_CurrentRoundAndPeriod (0.00s)
+PASS
+ok  	heavybagworkout/internal/cli	43.210s
+=== RUN   TestWorkoutConfig_Validate
+=== RUN   TestWorkoutConfig_Validate/valid_config
+=== RUN   TestWorkoutConfig_Validate/zero_work_duration
+=== RUN   TestWorkoutConfig_Validate/negative_work_duration
+=== RUN   TestWorkoutConfig_Validate/negative_rest_duration
+=== RUN   TestWorkoutConfig_Validate/zero_rounds
+=== RUN   TestWorkoutConfig_Validate/zero_rest_duration_(valid)
+--- PASS: TestWorkoutConfig_Validate (0.00s)
+    --- PASS: TestWorkoutConfig_Validate/valid_config (0.00s)
+    --- PASS: TestWorkoutConfig_Validate/zero_work_duration (0.00s)
+    --- PASS: TestWorkoutConfig_Validate/negative_work_duration (0.00s)
+    --- PASS: TestWorkoutConfig_Validate/negative_rest_duration (0.00s)
+    --- PASS: TestWorkoutConfig_Validate/zero_rounds (0.00s)
+    --- PASS: TestWorkoutConfig_Validate/zero_rest_duration_(valid) (0.00s)
+=== RUN   TestPatternConfig_Validate
+=== RUN   TestPatternConfig_Validate/valid_config_-_linear
+=== RUN   TestPatternConfig_Validate/valid_config_-_pyramid
+=== RUN   TestPatternConfig_Validate/invalid_type
+=== RUN   TestPatternConfig_Validate/zero_min_moves
+=== RUN   TestPatternConfig_Validate/max_moves_less_than_min_moves
+=== RUN   TestPatternConfig_Validate/equal_min_and_max_moves_(valid)
+--- PASS: TestPatternConfig_Validate (0.00s)
+    --- PASS: TestPatternConfig_Validate/valid_config_-_linear (0.00s)
+    --- PASS: TestPatternConfig_Validate/valid_config_-_pyramid (0.00s)
+    --- PASS: TestPatternConfig_Validate/invalid_type (0.00s)
+    --- PASS: TestPatternConfig_Validate/zero_min_moves (0.00s)
+    --- PASS: TestPatternConfig_Validate/max_moves_less_than_min_moves (0.00s)
+    --- PASS: TestPatternConfig_Validate/equal_min_and_max_moves_(valid) (0.00s)
+=== RUN   TestAppConfig_Validate
+=== RUN   TestAppConfig_Validate/valid_orthodox_stance
+=== RUN   TestAppConfig_Validate/valid_southpaw_stance
+=== RUN   TestAppConfig_Validate/empty_stance_(defaults_to_orthodox)
+--- PASS: TestAppConfig_Validate (0.00s)
+    --- PASS: TestAppConfig_Validate/valid_orthodox_stance (0.00s)
+    --- PASS: TestAppConfig_Validate/valid_southpaw_stance (0.00s)
+    --- PASS: TestAppConfig_Validate/empty_stance_(defaults_to_orthodox) (0.00s)
+=== RUN   TestWorkoutConfig_ToModelsWorkoutConfig
+--- PASS: TestWorkoutConfig_ToModelsWorkoutConfig (0.00s)
+=== RUN   TestPatternConfig_ToModelsWorkoutPattern
+=== RUN   TestPatternConfig_ToModelsWorkoutPattern/linear_type
+=== RUN   TestPatternConfig_ToModelsWorkoutPattern/pyramid_type
+--- PASS: TestPatternConfig_ToModelsWorkoutPattern (0.00s)
+    --- PASS: TestPatternConfig_ToModelsWorkoutPattern/linear_type (0.00s)
+    --- PASS: TestPatternConfig_ToModelsWorkoutPattern/pyramid_type (0.00s)
+=== RUN   TestAppConfig_GetStance
+=== RUN   TestAppConfig_GetStance/explicit_orthodox
+=== RUN   TestAppConfig_GetStance/explicit_southpaw
+=== RUN   TestAppConfig_GetStance/empty_stance_defaults_to_orthodox
+--- PASS: TestAppConfig_GetStance (0.00s)
+    --- PASS: TestAppConfig_GetStance/explicit_orthodox (0.00s)
+    --- PASS: TestAppConfig_GetStance/explicit_southpaw (0.00s)
+    --- PASS: TestAppConfig_GetStance/empty_stance_defaults_to_orthodox (0.00s)
+=== RUN   TestLoadDefault
+--- PASS: TestLoadDefault (0.00s)
+=== RUN   TestLoadFromPreset
+=== RUN   TestLoadFromPreset/beta_style_preset
+=== RUN   TestLoadFromPreset/endurance_preset
+=== RUN   TestLoadFromPreset/power_preset
+=== RUN   TestLoadFromPreset/invalid_preset
+--- PASS: TestLoadFromPreset (0.00s)
+    --- PASS: TestLoadFromPreset/beta_style_preset (0.00s)
+    --- PASS: TestLoadFromPreset/endurance_preset (0.00s)
+    --- PASS: TestLoadFromPreset/power_preset (0.00s)
+    --- PASS: TestLoadFromPreset/invalid_preset (0.00s)
+=== RUN   TestLoadFromFile
+=== RUN   TestLoadFromFile/complete_config_with_stance
+=== RUN   TestLoadFromFile/config_with_orthodox_stance
+=== RUN   TestLoadFromFile/config_without_stance_(defaults_to_orthodox)
+--- PASS: TestLoadFromFile (0.00s)
+    --- PASS: TestLoadFromFile/complete_config_with_stance (0.00s)
+    --- PASS: TestLoadFromFile/config_with_orthodox_stance (0.00s)
+    --- PASS: TestLoadFromFile/config_without_stance_(defaults_to_orthodox) (0.00s)
+=== RUN   TestAppConfig_GetOpenAIAPIKey
+=== RUN   TestAppConfig_GetOpenAIAPIKey/api_key_in_config
+=== RUN   TestAppConfig_GetOpenAIAPIKey/api_key_in_env_var
+=== RUN   TestAppConfig_GetOpenAIAPIKey/no_api_key
+--- PASS: TestAppConfig_GetOpenAIAPIKey (0.00s)
+    --- PASS: TestAppConfig_GetOpenAIAPIKey/api_key_in_config (0.00s)
+    --- PASS: TestAppConfig_GetOpenAIAPIKey/api_key_in_env_var (0.00s)
+    --- PASS: TestAppConfig_GetOpenAIAPIKey/no_api_key (0.00s)
+=== RUN   TestAppConfig_SaveToFile
+--- PASS: TestAppConfig_SaveToFile (0.00s)
+PASS
+ok  	heavybagworkout/internal/config	(cached)
+=== RUN   TestComboGeneratorGenerateComboLength
+--- PASS: TestComboGeneratorGenerateComboLength (0.00s)
+=== RUN   TestComboGeneratorGenerateComboIncludesDefensive
+--- PASS: TestComboGeneratorGenerateComboIncludesDefensive (0.00s)
+=== RUN   TestComboGeneratorHelpers
+--- PASS: TestComboGeneratorHelpers (0.00s)
+=== RUN   TestComboStringRepresentation
+--- PASS: TestComboStringRepresentation (0.00s)
+=== RUN   TestComboGeneratorValidatePunchSequence
+--- PASS: TestComboGeneratorValidatePunchSequence (0.00s)
+=== RUN   TestComboGeneratorValidateDefensiveSequence
+--- PASS: TestComboGeneratorValidateDefensiveSequence (0.00s)
+=== RUN   TestGenerateCombosForWorkPeriod
+--- PASS: TestGenerateCombosForWorkPeriod (0.00s)
+=== RUN   TestGenerateCombosForWorkPeriod_AlwaysOneCombo
+=== RUN   TestGenerateCombosForWorkPeriod_AlwaysOneCombo/short_duration
+=== RUN   TestGenerateCombosForWorkPeriod_AlwaysOneCombo/medium_duration
+=== RUN   TestGenerateCombosForWorkPeriod_AlwaysOneCombo/long_duration
+=== RUN   TestGenerateCombosForWorkPeriod_AlwaysOneCombo/very_long_duration
+--- PASS: TestGenerateCombosForWorkPeriod_AlwaysOneCombo (0.00s)
+    --- PASS: TestGenerateCombosForWorkPeriod_AlwaysOneCombo/short_duration (0.00s)
+    --- PASS: TestGenerateCombosForWorkPeriod_AlwaysOneCombo/medium_duration (0.00s)
+    --- PASS: TestGenerateCombosForWorkPeriod_AlwaysOneCombo/long_duration (0.00s)
+    --- PASS: TestGenerateCombosForWorkPeriod_AlwaysOneCombo/very_long_duration (0.00s)
+=== RUN   TestGenerateCombosForWorkPeriod_LinearPatternWithPreviousMoveCount
+=== RUN   TestGenerateCombosForWorkPeriod_LinearPatternWithPreviousMoveCount/round_2_with_previous_3_moves
+=== RUN   TestGenerateCombosForWorkPeriod_LinearPatternWithPreviousMoveCount/round_3_with_previous_4_moves
+=== RUN   TestGenerateCombosForWorkPeriod_LinearPatternWithPreviousMoveCount/round_4_with_previous_4_moves
+=== RUN   TestGenerateCombosForWorkPeriod_LinearPatternWithPreviousMoveCount/round_5_with_previous_5_moves
+--- PASS: TestGenerateCombosForWorkPeriod_LinearPatternWithPreviousMoveCount (0.00s)
+    --- PASS: TestGenerateCombosForWorkPeriod_LinearPatternWithPreviousMoveCount/round_2_with_previous_3_moves (0.00s)
+    --- PASS: TestGenerateCombosForWorkPeriod_LinearPatternWithPreviousMoveCount/round_3_with_previous_4_moves (0.00s)
+    --- PASS: TestGenerateCombosForWorkPeriod_LinearPatternWithPreviousMoveCount/round_4_with_previous_4_moves (0.00s)
+    --- PASS: TestGenerateCombosForWorkPeriod_LinearPatternWithPreviousMoveCount/round_5_with_previous_5_moves (0.00s)
+=== RUN   TestGenerateCombosForWorkPeriod_PyramidPatternWithPreviousMoveCount
+=== RUN   TestGenerateCombosForWorkPeriod_PyramidPatternWithPreviousMoveCount/round_2_ascending
+=== RUN   TestGenerateCombosForWorkPeriod_PyramidPatternWithPreviousMoveCount/round_3_ascending
+=== RUN   TestGenerateCombosForWorkPeriod_PyramidPatternWithPreviousMoveCount/round_4_descending
+=== RUN   TestGenerateCombosForWorkPeriod_PyramidPatternWithPreviousMoveCount/round_5_descending
+--- PASS: TestGenerateCombosForWorkPeriod_PyramidPatternWithPreviousMoveCount (0.00s)
+    --- PASS: TestGenerateCombosForWorkPeriod_PyramidPatternWithPreviousMoveCount/round_2_ascending (0.00s)
+    --- PASS: TestGenerateCombosForWorkPeriod_PyramidPatternWithPreviousMoveCount/round_3_ascending (0.00s)
+    --- PASS: TestGenerateCombosForWorkPeriod_PyramidPatternWithPreviousMoveCount/round_4_descending (0.00s)
+    --- PASS: TestGenerateCombosForWorkPeriod_PyramidPatternWithPreviousMoveCount/round_5_descending (0.00s)
+=== RUN   TestLLMWorkoutGeneratorGenerateWorkout_Success
+--- PASS: TestLLMWorkoutGeneratorGenerateWorkout_Success (0.00s)
+=== RUN   TestLLMWorkoutGeneratorGenerateWorkoutWithStance_Orthodox
+--- PASS: TestLLMWorkoutGeneratorGenerateWorkoutWithStance_Orthodox (0.00s)
+=== RUN   TestLLMWorkoutGeneratorGenerateWorkoutWithStance_Southpaw
+--- PASS: TestLLMWorkoutGeneratorGenerateWorkoutWithStance_Southpaw (0.00s)
+=== RUN   TestLLMWorkoutGeneratorGenerateWorkoutWithStance_DefensiveMovePairing
+--- PASS: TestLLMWorkoutGeneratorGenerateWorkoutWithStance_DefensiveMovePairing (0.00s)
+=== RUN   TestLLMWorkoutGeneratorGenerateWorkout_InvalidMoveNumber
+    openai_client.go:98: Unexpected call to *mocks.MockHTTPClient.Do([0x1400017cb40]) at /Users/ishanchopra/Code/HeavyBagWorkout/internal/generator/openai_client.go:98 because: 
+        expected call at /Users/ishanchopra/Code/HeavyBagWorkout/internal/generator/llm_workout_generator_test.go:184 has already been called the max number of times
+--- FAIL: TestLLMWorkoutGeneratorGenerateWorkout_InvalidMoveNumber (0.00s)
+=== RUN   TestLLMWorkoutGeneratorGenerateWorkout_InvalidJSON
+    openai_client.go:98: Unexpected call to *mocks.MockHTTPClient.Do([0x1400017cdc0]) at /Users/ishanchopra/Code/HeavyBagWorkout/internal/generator/openai_client.go:98 because: 
+        expected call at /Users/ishanchopra/Code/HeavyBagWorkout/internal/generator/llm_workout_generator_test.go:208 has already been called the max number of times
+--- FAIL: TestLLMWorkoutGeneratorGenerateWorkout_InvalidJSON (0.00s)
+=== RUN   TestLLMWorkoutGeneratorGenerateWorkout_ClientError
+    openai_client.go:98: Unexpected call to *mocks.MockHTTPClient.Do([0x1400017d040]) at /Users/ishanchopra/Code/HeavyBagWorkout/internal/generator/openai_client.go:98 because: 
+        expected call at /Users/ishanchopra/Code/HeavyBagWorkout/internal/generator/llm_workout_generator_test.go:232 has already been called the max number of times
+--- FAIL: TestLLMWorkoutGeneratorGenerateWorkout_ClientError (0.00s)
+=== RUN   TestLLMWorkoutGenerator_OneComboPerRound
+--- PASS: TestLLMWorkoutGenerator_OneComboPerRound (0.00s)
+=== RUN   TestLLMWorkoutGenerator_ExcludesDefensiveMovesWhenDisabled
+    llm_workout_generator_test.go:318: expected prompt to explicitly say 'DO NOT use defensive moves'
+    llm_workout_generator_test.go:324: expected prompt to say 'All combos must consist of punches only'
+--- FAIL: TestLLMWorkoutGenerator_ExcludesDefensiveMovesWhenDisabled (0.00s)
+=== RUN   TestOpenAIClientGenerateWorkoutRequest_Success
+--- PASS: TestOpenAIClientGenerateWorkoutRequest_Success (0.00s)
+=== RUN   TestOpenAIClientGenerateWorkoutRequest_HTTPError
+--- PASS: TestOpenAIClientGenerateWorkoutRequest_HTTPError (0.00s)
+=== RUN   TestOpenAIClientGenerateWorkoutRequest_StatusError
+--- PASS: TestOpenAIClientGenerateWorkoutRequest_StatusError (0.00s)
+=== RUN   TestOpenAIClientGenerateWorkoutRequest_APIErrorPayload
+--- PASS: TestOpenAIClientGenerateWorkoutRequest_APIErrorPayload (0.00s)
+=== RUN   TestOpenAIClientGenerateWorkoutRequest_NoChoices
+--- PASS: TestOpenAIClientGenerateWorkoutRequest_NoChoices (0.00s)
+=== RUN   TestOpenAIClientGenerateWorkoutRequest_InvalidJSON
+--- PASS: TestOpenAIClientGenerateWorkoutRequest_InvalidJSON (0.00s)
+=== RUN   TestWorkoutGeneratorGenerateWorkout
+--- PASS: TestWorkoutGeneratorGenerateWorkout (0.00s)
+=== RUN   TestWorkoutGeneratorDistributeCombosAcrossWorkPeriod
+--- PASS: TestWorkoutGeneratorDistributeCombosAcrossWorkPeriod (0.00s)
+=== RUN   TestWorkoutGeneratorInvalidConfig
+--- PASS: TestWorkoutGeneratorInvalidConfig (0.00s)
+=== RUN   TestWorkoutPresetConfigurations
+--- PASS: TestWorkoutPresetConfigurations (0.00s)
+FAIL
+FAIL	heavybagworkout/internal/generator	2.319s
+=== RUN   TestCharacterSprite_LastFrameTiming
+--- PASS: TestCharacterSprite_LastFrameTiming (0.00s)
+=== RUN   TestCharacterSprite_LastFrameDoesNotResetFrameStartTime
+--- PASS: TestCharacterSprite_LastFrameDoesNotResetFrameStartTime (0.00s)
+=== RUN   TestFormValidation_WorkDuration
+--- PASS: TestFormValidation_WorkDuration (0.00s)
+=== RUN   TestFormValidation_RestDuration
+--- PASS: TestFormValidation_RestDuration (0.00s)
+=== RUN   TestFormValidation_TotalRounds
+--- PASS: TestFormValidation_TotalRounds (0.00s)
+=== RUN   TestFormValidation_MinMoves
+--- PASS: TestFormValidation_MinMoves (0.00s)
+=== RUN   TestFormValidation_MaxMoves
+--- PASS: TestFormValidation_MaxMoves (0.00s)
+=== RUN   TestWorkoutGeneration_AllPatterns
+--- PASS: TestWorkoutGeneration_AllPatterns (0.00s)
+=== RUN   TestAnimations_AllPunchTypes_Orthodox
+--- PASS: TestAnimations_AllPunchTypes_Orthodox (0.00s)
+=== RUN   TestAnimations_AllPunchTypes_Southpaw
+--- PASS: TestAnimations_AllPunchTypes_Southpaw (0.00s)
+=== RUN   TestAnimations_AllDefensiveMoves
+--- PASS: TestAnimations_AllDefensiveMoves (0.00s)
+=== RUN   TestPauseResumeFunctionality
+--- PASS: TestPauseResumeFunctionality (0.00s)
+=== RUN   TestAudioCuesDuringWorkout
+--- PASS: TestAudioCuesDuringWorkout (0.00s)
+=== RUN   TestWorkoutCompletionFlow
+--- PASS: TestWorkoutCompletionFlow (0.00s)
+=== RUN   TestErrorHandling_InvalidAPIKey
+--- PASS: TestErrorHandling_InvalidAPIKey (0.00s)
+=== RUN   TestWindowResizeBehavior
+--- PASS: TestWindowResizeBehavior (0.00s)
+=== RUN   TestComboMoveTiming
+--- PASS: TestComboMoveTiming (0.00s)
+PASS
+ok  	heavybagworkout/internal/gui	2.639s
+?   	heavybagworkout/internal/mocks	[no test files]
+=== RUN   TestMoveMapping_GetMappingDescriptionWithStance_Orthodox
+--- PASS: TestMoveMapping_GetMappingDescriptionWithStance_Orthodox (0.00s)
+=== RUN   TestMoveMapping_GetMappingDescriptionWithStance_Southpaw
+--- PASS: TestMoveMapping_GetMappingDescriptionWithStance_Southpaw (0.00s)
+=== RUN   TestMoveMapping_GetMappingDescriptionWithStance_PunchMappings
+--- PASS: TestMoveMapping_GetMappingDescriptionWithStance_PunchMappings (0.00s)
+=== RUN   TestMoveMapping_GetMappingDescriptionWithStance_DefensiveMoves
+--- PASS: TestMoveMapping_GetMappingDescriptionWithStance_DefensiveMoves (0.00s)
+=== RUN   TestMoveMapping_GetMappingDescriptionWithStance_ContainsNumbers
+--- PASS: TestMoveMapping_GetMappingDescriptionWithStance_ContainsNumbers (0.00s)
+PASS
+ok  	heavybagworkout/internal/models	(cached)
+=== RUN   TestCountdownTimer_StartAndComplete
+--- PASS: TestCountdownTimer_StartAndComplete (2.50s)
+=== RUN   TestCountdownTimer_PauseAndResume
+--- PASS: TestCountdownTimer_PauseAndResume (2.10s)
+=== RUN   TestCountdownTimer_Stop
+--- PASS: TestCountdownTimer_Stop (3.00s)
+=== RUN   TestCountdownTimer_Reset
+--- PASS: TestCountdownTimer_Reset (1.00s)
+=== RUN   TestWorkPeriodTimer
+--- PASS: TestWorkPeriodTimer (2.50s)
+=== RUN   TestRestPeriodTimer
+--- PASS: TestRestPeriodTimer (1.50s)
+=== RUN   TestCountdownTimer_RemainingTime
+--- PASS: TestCountdownTimer_RemainingTime (2.00s)
+=== RUN   TestRecordingAudioCues_E2E
+    recording_audio_cues_test.go:22: System audio capture requires BlackHole/similar setup - skipping in test environment
+--- SKIP: TestRecordingAudioCues_E2E (0.00s)
+=== RUN   TestWorkoutTimer_StartAndComplete
+--- PASS: TestWorkoutTimer_StartAndComplete (4.04s)
+=== RUN   TestWorkoutTimer_PauseAndResume
+--- PASS: TestWorkoutTimer_PauseAndResume (1.10s)
+=== RUN   TestWorkoutTimer_CurrentRoundAndPeriod
+--- PASS: TestWorkoutTimer_CurrentRoundAndPeriod (2.01s)
+=== RUN   TestWorkoutTimer_Stop
+--- PASS: TestWorkoutTimer_Stop (1.00s)
+=== RUN   TestWorkoutTimer_StopCancelsAudio
+--- PASS: TestWorkoutTimer_StopCancelsAudio (11.29s)
+PASS
+ok  	heavybagworkout/internal/timer	37.316s
+?   	heavybagworkout/internal/types	[no test files]
+FAIL

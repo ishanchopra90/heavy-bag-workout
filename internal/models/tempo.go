@@ -100,11 +100,11 @@ func (t Tempo) MaxMovesLimit() int {
 	case TempoSlow:
 		return 5
 	case TempoMedium:
-		return 4
+		return 5
 	case TempoFast:
-		return 3
+		return 5
 	case TempoSuperfast:
-		return 2
+		return 3
 	default:
 		return 5 // Default to slow tempo limit
 	}

@@ -150,9 +150,9 @@ func TestFormValidation_MaxMoves(t *testing.T) {
 		t.Error("expected error for max moves exceeding Slow tempo limit")
 	}
 
-	// Test with Medium tempo (limit: 4)
+	// Test with Medium tempo (limit: 5)
 	app.selectedTempo = models.TempoMedium
-	app.maxMovesEditor.SetText("4")
+	app.maxMovesEditor.SetText("5")
 	// Clear any previous errors first
 	delete(app.validationErrors, "maxMoves")
 	app.validateField("maxMoves")
@@ -164,15 +164,15 @@ func TestFormValidation_MaxMoves(t *testing.T) {
 		}
 	}
 
-	app.maxMovesEditor.SetText("5")
+	app.maxMovesEditor.SetText("6")
 	app.validateField("maxMoves")
 	if _, hasError := app.validationErrors["maxMoves"]; !hasError {
 		t.Error("expected error for max moves exceeding Medium tempo limit")
 	}
 
-	// Test with Fast tempo (limit: 3)
+	// Test with Fast tempo (limit: 5)
 	app.selectedTempo = models.TempoFast
-	app.maxMovesEditor.SetText("3")
+	app.maxMovesEditor.SetText("5")
 	// Clear any previous errors first
 	delete(app.validationErrors, "maxMoves")
 	app.validateField("maxMoves")
@@ -184,17 +184,17 @@ func TestFormValidation_MaxMoves(t *testing.T) {
 		}
 	}
 
-	app.maxMovesEditor.SetText("4")
+	app.maxMovesEditor.SetText("6")
 	app.validateField("maxMoves")
 	if _, hasError := app.validationErrors["maxMoves"]; !hasError {
 		t.Error("expected error for max moves exceeding Fast tempo limit")
 	}
 
-	// Test with Superfast tempo (limit: 2)
+	// Test with Superfast tempo (limit: 3)
 	app.selectedTempo = models.TempoSuperfast
 	// Set min moves to 1 to avoid min > max error
 	app.minMovesEditor.SetText("1")
-	app.maxMovesEditor.SetText("2")
+	app.maxMovesEditor.SetText("3")
 	// Clear any previous errors first
 	delete(app.validationErrors, "maxMoves")
 	app.validateField("maxMoves")
@@ -206,7 +206,7 @@ func TestFormValidation_MaxMoves(t *testing.T) {
 		}
 	}
 
-	app.maxMovesEditor.SetText("3")
+	app.maxMovesEditor.SetText("4")
 	app.validateField("maxMoves")
 	if _, hasError := app.validationErrors["maxMoves"]; !hasError {
 		t.Error("expected error for max moves exceeding Superfast tempo limit")
